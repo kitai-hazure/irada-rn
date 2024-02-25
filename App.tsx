@@ -1,6 +1,6 @@
 import React from 'react';
 import {Web3Modal, createWeb3Modal} from '@web3modal/ethers5-react-native';
-import {walletconnectConfig} from './src/config';
+import {linking, walletconnectConfig} from './src/config';
 import AppNavigator from './src/navigation';
 import {NavigationContainer} from '@react-navigation/native';
 import {StatusBar} from 'react-native';
@@ -28,7 +28,7 @@ export default function App() {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <QueryClientProvider client={queryClient}>
-            <NavigationContainer>
+            <NavigationContainer linking={linking}>
               <AppNavigator />
             </NavigationContainer>
           </QueryClientProvider>

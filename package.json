@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ethersproject/shims": "5.7.0",
+    "@gorhom/bottom-sheet": "^4",
     "@react-native-async-storage/async-storage": "1.21.0",
     "@react-native-clipboard/clipboard": "^1.13.2",
     "@react-native-community/netinfo": "^11.3.0",

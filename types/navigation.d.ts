@@ -4,6 +4,12 @@ import {DrawerNavigationProp} from '@react-navigation/drawer';
 
 export type DrawerNavigatorRoutes = {
   Home: undefined;
+  SendMoney: {
+    chain: string;
+    currency: string;
+    amount: string;
+    to: string;
+  };
 };
 
 export type AppNavigatorRoutes = {

@@ -1,28 +1,36 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useContacts} from '../hooks';
-export const Home = () => {
-  const {contacts, addToContact, getAddressFromContact} = useContacts();
+import {useBottomSheet} from '../hooks';
+import {AddContactSheet} from '../components';
 
-  const address = '0x7Aec901dB0Ce6a2071747D121cb9c69E147D9387';
+export const Home = () => {
+  const {contacts, getAddressFromContact} = useContacts();
+  const [currentContact, setCurrentContact] = useState<number>();
+  const {showSheet, SheetComponent} = useBottomSheet({snapPoints: ['25%']});
 
   return (
     <View>
       <FlatList
         data={contacts}
-        renderItem={({item: contact}) => (
+        renderItem={({item: contact, index}) => (
           <TouchableOpacity
             style={styles.container}
-            onPress={() =>
-              addToContact({
-                contact,
-                address,
-              })
-            }>
+            onPress={() => {
+              setCurrentContact(index);
+              showSheet();
+            }}>
             <Text>{getAddressFromContact({contact}) || contact.firstName}</Text>
           </TouchableOpacity>
         )}
         keyExtractor={item => item.id!}
+      />
+      <SheetComponent
+        InnerComponent={AddContactSheet}
+        InnerComponentProps={{
+          contact:
+            contacts && currentContact ? contacts[currentContact] : undefined,
+        }}
       />
     </View>
   );
