@@ -1,22 +1,28 @@
 import React, {useState} from 'react';
-import {BottomSheetTextInput, TouchableOpacity} from '@gorhom/bottom-sheet';
-import {Text, View} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {useContacts} from '../../hooks';
 import {Contact} from 'expo-contacts';
 
-interface AddContactSheetProps {
+interface AddContactModalProps {
   contact: Contact;
 }
 
-export const AddContactSheet = ({contact}: AddContactSheetProps) => {
+export const AddContactModal = ({contact}: AddContactModalProps) => {
   const {addToContact} = useContacts();
   const [address, setAddress] = useState<string>('');
 
   return (
-    <View>
-      <BottomSheetTextInput
+    <View style={styles.container}>
+      <TextInput
         value={address}
         onChangeText={txt => setAddress(txt)}
+        placeholder="Add Address here"
       />
       <TouchableOpacity
         onPress={() =>
@@ -30,3 +36,10 @@ export const AddContactSheet = ({contact}: AddContactSheetProps) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    justifyContent: 'center',
+    backgroundColor: 'white',
+  },
+});

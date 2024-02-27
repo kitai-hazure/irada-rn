@@ -1,32 +1,33 @@
 import React, {useState} from 'react';
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {useContacts} from '../hooks';
-import {useBottomSheet} from '../hooks';
-import {AddContactSheet} from '../components';
+import {FlatList, StyleSheet, View} from 'react-native';
+import {useContacts, useModal, useThemedStyles} from '../hooks';
+import {AddContactModal} from '../components';
+import {ContactItem} from '../components';
+import {Theme} from '../config';
 
 export const Home = () => {
-  const {contacts, getAddressFromContact} = useContacts();
+  const {contacts} = useContacts();
   const [currentContact, setCurrentContact] = useState<number>();
-  const {showSheet, SheetComponent} = useBottomSheet({snapPoints: ['25%']});
+  const {showModal, ModalComponent} = useModal();
+  const themedStyles = useThemedStyles(styles);
 
   return (
-    <View>
+    <View style={themedStyles.container}>
       <FlatList
         data={contacts}
         renderItem={({item: contact, index}) => (
-          <TouchableOpacity
-            style={styles.container}
-            onPress={() => {
+          <ContactItem
+            contact={contact}
+            onPressAdd={() => {
               setCurrentContact(index);
-              showSheet();
-            }}>
-            <Text>{getAddressFromContact({contact}) || contact.firstName}</Text>
-          </TouchableOpacity>
+              showModal();
+            }}
+          />
         )}
         keyExtractor={item => item.id!}
       />
-      <SheetComponent
-        InnerComponent={AddContactSheet}
+      <ModalComponent
+        InnerComponent={AddContactModal}
         InnerComponentProps={{
           contact:
             contacts && currentContact ? contacts[currentContact] : undefined,
@@ -36,11 +37,10 @@ export const Home = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 10,
-  },
-});
+const styles = (theme: Theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.background,
+    },
+  });

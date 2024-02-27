@@ -1,13 +1,13 @@
 import {useMemo} from 'react';
-import {
-  useWeb3ModalAccount,
-  useWeb3ModalProvider,
-} from '@web3modal/ethers5-react-native';
 import {ethers} from 'ethers';
+import {useWalletConnectModal} from '@walletconnect/modal-react-native';
 
 export const useWallet = () => {
-  const {walletProvider} = useWeb3ModalProvider();
-  const {address, isConnected} = useWeb3ModalAccount();
+  const {
+    address,
+    isConnected,
+    provider: walletProvider,
+  } = useWalletConnectModal();
 
   const provider = useMemo(() => {
     if (walletProvider) {

@@ -1,18 +1,17 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect} from 'react';
-import {useWeb3Modal} from '@web3modal/ethers5-react-native';
+import {useWalletConnectModal} from '@walletconnect/modal-react-native';
 import {useWallet} from '../hooks';
 import {AppNavigatorRoutes, StackNavigationProps} from '../../types/navigation';
 
 export const Login = ({
   navigation,
 }: StackNavigationProps<AppNavigatorRoutes, 'Login'>) => {
-  const {open} = useWeb3Modal();
+  const {open} = useWalletConnectModal();
   const {isLoggedIn} = useWallet();
 
   useEffect(() => {
     if (isLoggedIn) {
-      console.log('isLoggedIn', isLoggedIn);
       navigation.reset({
         index: 0,
         routes: [{name: 'Main'}],

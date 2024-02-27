@@ -9,7 +9,7 @@ export const linking: LinkingOptions<any> = {
         screens: {
           Home: 'home',
           SendMoney: {
-            path: 'send/:chain/:currency/:amount/:to',
+            path: 'send',
           },
         },
       },

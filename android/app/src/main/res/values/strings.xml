@@ -1,3 +1,29 @@
 <resources>
     <string name="app_name">irada</string>
+    <string-array name="SendMoneyQueries">
+        <item>Send $to $amount $currency on $chain.</item>
+        <item>Transfer $amount $currency to $to on $chain.</item>
+        <item>Initiate a $amount $currency transaction to $to via $chain.</item>
+        <item>Send $amount $currency to $to using $chain.</item>
+        <item>Transfer $amount $currency to $to\'s account on $chain.</item>
+        <item>Send $amount $currency to $to\'s wallet via $chain.</item>
+        <item>Initiate a transfer of $amount $currency to $to through $chain.</item>
+        <item>Send $amount $currency to $to\'s address on $chain.</item>
+        <item>Transfer $amount $currency to $to\'s account using $chain.</item>
+        <item>Send $amount $currency to $to\'s wallet on $chain.</item>
+        <item>Initiate a $amount $currency transfer to $to\'s address via $chain.</item>
+        <item>Send $amount $currency to $to\'s account via $chain.</item>
+        <item>Transfer $amount $currency to $to\'s wallet on $chain.</item>
+        <item>Send $amount $currency to $to\'s address through $chain.</item>
+        <item>Transfer $amount $currency to $to on $chain.</item>
+        <item>Initiate a $amount $currency transfer to $to using $chain.</item>
+        <item>Send $amount $currency to $to\'s account via $chain.</item>
+        <item>Transfer $amount $currency to $to\'s wallet on $chain.</item>
+        <item>Send $amount $currency to $to through $chain on Irada.</item>
+        <item>Transfer $amount $currency to $to on $chain using Irada.</item>
+        <item>Initiate a $amount $currency transfer to $to via $chain using Irada app.</item>
+        <item>Send $amount $currency to $to\'s account on $chain using Irada app.</item>
+        <item>Transfer $amount $currency to $to\'s wallet on $chain using Irada app.</item>
+        <item>Send $amount $currency to $to\'s address on $chain on Irada.</item>
+  </string-array>
 </resources>

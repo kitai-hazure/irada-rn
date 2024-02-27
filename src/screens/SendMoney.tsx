@@ -13,6 +13,14 @@ export const SendMoney = ({
   return (
     <View>
       <Text>SendMoney</Text>
+      {route.params && (
+        <>
+          <Text>Amount: {route.params.amount}</Text>
+          <Text>Recipient: {route.params.to}</Text>
+          <Text>Currency: {route.params.currency}</Text>
+          <Text>Chain: {route.params.chain}</Text>
+        </>
+      )}
     </View>
   );
 };

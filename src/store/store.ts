@@ -13,17 +13,19 @@ import {
 
 import contactSlice from './contactSlice';
 import {REDUX_STORE} from '../config';
+import themeSlice from './themeSlice';
 
 const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  whitelist: [REDUX_STORE.CONTACT],
+  whitelist: [REDUX_STORE.CONTACT, REDUX_STORE.THEME],
   blacklist: [],
 };
 
 const rootReducer = combineReducers({
   [REDUX_STORE.CONTACT]: contactSlice,
+  [REDUX_STORE.THEME]: themeSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

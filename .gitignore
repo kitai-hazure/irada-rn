@@ -72,3 +72,6 @@ web-build/
 
 # env
 .env
+
+# keystore
+keystore.properties
