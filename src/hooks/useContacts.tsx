@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as Contacts from 'expo-contacts';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -6,6 +7,8 @@ import {
   deleteAddressFromContact,
 } from '../store';
 import {useContactsQuery} from './useContactsQuery';
+import {ethers} from 'ethers';
+import {useEffect, useState} from 'react';
 
 type AddAddressToContactOptions = {
   contact: Contacts.Contact;
@@ -21,6 +24,7 @@ type RemoveAddressFromContactOptions = {
 };
 
 export const useContacts = () => {
+  const [savedContacts, setSavedContacts] = useState<Contacts.Contact[]>([]);
   const contactMap = useSelector(selectContactMap);
   const dispatch = useDispatch();
   const {data, error, isLoading} = useContactsQuery();
@@ -30,12 +34,17 @@ export const useContacts = () => {
       console.warn('Invalid contact id');
       return;
     } else {
+      if (!ethers.utils.isAddress(address)) {
+        console.warn('Invalid address');
+        return;
+      }
       dispatch(
         addAddressToContact({
           address,
           contactId: contact.id,
         }),
       );
+      setSavedContacts(prev => [...prev, contact]);
     }
   };
 
@@ -49,6 +58,7 @@ export const useContacts = () => {
           contactId: contact.id,
         }),
       );
+      setSavedContacts(prev => prev.filter(c => c.id !== contact.id));
     }
   };
 
@@ -61,6 +71,16 @@ export const useContacts = () => {
     }
   };
 
+  useEffect(() => {
+    const saved = [];
+    for (const contact of data || []) {
+      if (contact.id && contactMap[contact.id]?.address) {
+        saved.push(contact);
+      }
+    }
+    setSavedContacts(saved);
+  }, [data]);
+
   return {
     contacts: data,
     isLoadingContacts: isLoading,
@@ -68,5 +88,6 @@ export const useContacts = () => {
     addToContact,
     removeFromContact,
     getAddressFromContact,
+    savedContacts,
   };
 };

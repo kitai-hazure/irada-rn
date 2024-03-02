@@ -15,5 +15,11 @@ export const useWallet = () => {
     }
   }, [walletProvider]);
 
-  return {provider, isLoggedIn: isConnected, address};
+  const signer = useMemo(() => {
+    if (provider) {
+      return provider.getSigner();
+    }
+  }, [provider]);
+
+  return {provider, isLoggedIn: isConnected, address, signer};
 };

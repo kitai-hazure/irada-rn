@@ -1,9 +1,10 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {Contact} from 'expo-contacts';
-import {useThemedStyles} from '../../hooks';
+import {useContacts, useThemedStyles} from '../../hooks';
 import {Feather} from '@expo/vector-icons';
 import {Theme} from '../../config';
+import {AddressButton} from '../buttons';
 
 type ContactItemProps = {
   contact: Contact;
@@ -12,14 +13,13 @@ type ContactItemProps = {
 
 export const ContactItem = ({contact, onPressAdd}: ContactItemProps) => {
   const themedStyles = useThemedStyles(styles);
+  const {getAddressFromContact} = useContacts();
+  const address = getAddressFromContact({contact});
 
   return (
     <View style={themedStyles.container}>
       {contact.image ? (
-        <Image
-          style={themedStyles.image}
-          source={{uri: contact.image?.uri || 'https://picsum.photos/200'}}
-        />
+        <Image style={themedStyles.image} source={{uri: contact.image?.uri}} />
       ) : (
         <View style={themedStyles.iconContainer}>
           <Feather name="user" size={30} style={themedStyles.icon} />
@@ -34,11 +34,14 @@ export const ContactItem = ({contact, onPressAdd}: ContactItemProps) => {
             {contact.phoneNumbers[0].number}
           </Text>
         )}
+        {address && <AddressButton address={address} />}
       </View>
-      <TouchableOpacity
-        style={themedStyles.rightAlign}
-        onPress={() => onPressAdd()}>
-        <Feather name="plus" size={24} style={themedStyles.addIcon} />
+      <TouchableOpacity onPress={onPressAdd} style={themedStyles.rightAlign}>
+        <Feather
+          name={getAddressFromContact({contact}) ? 'edit' : 'plus'}
+          size={24}
+          style={themedStyles.addIcon}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -70,7 +73,7 @@ const styles = (theme: Theme) =>
       backgroundColor: 'lightgrey',
     },
     icon: {
-      color: theme.text,
+      color: theme.background,
     },
     addIcon: {
       color: theme.text,

@@ -1,22 +1,24 @@
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
-import {Login} from '../screens';
-import DrawerNavigator from './DrawerNavigator';
-import {useWallet} from '../hooks';
-import {AppNavigatorRoutes} from '../../types/navigation';
-
-const Stack = createStackNavigator<AppNavigatorRoutes>();
+import {useThemedStyles} from '../hooks';
+import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
+import {linking} from '../config';
+import {OuterNavigator} from './OuterNavigator';
 
 const AppNavigator = () => {
-  const {isLoggedIn} = useWallet();
+  const themedStyles = useThemedStyles(() => {});
 
   return (
-    <Stack.Navigator
-      screenOptions={{headerShown: false}}
-      initialRouteName={isLoggedIn ? 'Main' : 'Login'}>
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="Main" component={DrawerNavigator} />
-    </Stack.Navigator>
+    <NavigationContainer
+      linking={linking}
+      theme={{
+        ...DefaultTheme,
+        colors: {
+          ...DefaultTheme.colors,
+          background: themedStyles.theme.container,
+        },
+      }}>
+      <OuterNavigator />
+    </NavigationContainer>
   );
 };
 

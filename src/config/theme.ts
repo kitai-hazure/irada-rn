@@ -4,6 +4,8 @@ export type Theme = {
   yellow: string;
   orange: string;
   blue: string;
+  white: string;
+  black: string;
   background: string;
   container: string;
   text: string;
@@ -16,6 +18,8 @@ const COMMON_THEME = {
   yellow: '#FAE079',
   orange: '#E67063',
   blue: '#82DAE9',
+  white: '#FFFFFF',
+  black: '#000000',
 };
 
 export const LIGHT_THEME: Theme = {

@@ -16,7 +16,7 @@ export const useContactsQuery = () => {
         },
       );
       if (status === 'granted') {
-        const {data} = await Contacts.getContactsAsync();
+        const {data} = await Contacts.getContactsAsync({sort: 'firstName'});
         return data;
       } else {
         throw new Error('Permission denied');

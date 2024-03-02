@@ -8,6 +8,7 @@ export const linking: LinkingOptions<any> = {
       Main: {
         screens: {
           Home: 'home',
+          Contacts: 'contacts',
           SendMoney: {
             path: 'send',
           },

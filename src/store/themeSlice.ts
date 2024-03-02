@@ -3,7 +3,7 @@ import {REDUX_STORE} from '../config';
 
 type ThemeType = 'dark' | 'light';
 
-export interface ThemeSliceData {
+interface ThemeSliceData {
   theme: ThemeType;
 }
 

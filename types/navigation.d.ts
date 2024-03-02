@@ -10,11 +10,14 @@ export type DrawerNavigatorRoutes = {
     amount: string;
     to: string;
   };
+  Contacts: undefined;
+  SavedContacts: undefined;
 };
 
 export type AppNavigatorRoutes = {
   Login: undefined;
   Main: undefined;
+  Mnemonic: undefined;
 };
 
 export interface DrawerNavigationProps<
