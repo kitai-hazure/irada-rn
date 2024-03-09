@@ -1,16 +1,31 @@
 import {useCallback, useEffect} from 'react';
 import {Web3WalletTypes} from '@walletconnect/web3wallet';
 import {EIP155_SIGNING_METHODS, web3wallet} from '../config';
+import {useDispatch} from 'react-redux';
+import {
+  openProposalModal,
+  openSignTransactionModal,
+  openSignModal,
+  openSignTypedDataModal,
+  openSendTransactionModal,
+} from '../store';
 
-export default function useWalletConnectEvents(initialized: boolean) {
+export const useWalletConnectEvents = (initialized: boolean) => {
+  const dispatch = useDispatch();
+
   const onSessionProposal = useCallback(
     ({id, params, verifyContext}: Web3WalletTypes.SessionProposal) => {
-      console.log('onSessionProposal', id, params, verifyContext);
-      // set the verify context so it can be displayed in the projectInfoCard
-      // SettingsStore.setCurrentRequestVerifyContext(proposal.verifyContext);
-      // ModalStore.open('SessionProposalModal', {proposal});
+      console.log(
+        'onSessionProposal',
+        JSON.stringify({
+          id,
+          params,
+          verifyContext,
+        }),
+      );
+      dispatch(openProposalModal({isOpen: true, id, params, verifyContext}));
     },
-    [],
+    [dispatch],
   );
 
   const onAuthRequest = useCallback((request: Web3WalletTypes.AuthRequest) => {
@@ -20,41 +35,50 @@ export default function useWalletConnectEvents(initialized: boolean) {
 
   const onSessionRequest = useCallback(
     async (requestEvent: Web3WalletTypes.SessionRequest) => {
-      const {topic, params, verifyContext} = requestEvent;
+      const {topic, params} = requestEvent;
       const {request} = params;
       const requestSession = web3wallet.engine.signClient.session.get(topic);
-      // set the verify context so it can be displayed in the projectInfoCard
-      // SettingsStore.setCurrentRequestVerifyContext(verifyContext);
-
-      console.log('onSessionRequest', requestSession, verifyContext);
 
       switch (request.method) {
         case EIP155_SIGNING_METHODS.ETH_SIGN:
         case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
-          // return ModalStore.open('SessionSignModal', {
-          //   requestEvent,
-          //   requestSession,
-          // });
+          dispatch(openSignModal({isOpen: true, requestEvent, requestSession}));
           break;
 
         case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
         case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
         case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4:
-          // return ModalStore.open('SessionSignTypedDataModal', {
-          //   requestEvent,
-          //   requestSession,
-          // });
+          dispatch(
+            openSignTypedDataModal({
+              isOpen: true,
+              requestEvent,
+              requestSession,
+            }),
+          );
+          break;
+
+        case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
+          dispatch(
+            openSignTransactionModal({
+              isOpen: true,
+              requestEvent,
+              requestSession,
+            }),
+          );
           break;
 
         case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
-        case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
-          // return ModalStore.open('SessionSendTransactionModal', {
-          //   requestEvent,
-          //   requestSession,
-          // });
+          dispatch(
+            openSendTransactionModal({
+              isOpen: true,
+              requestEvent,
+              requestSession,
+            }),
+          );
           break;
 
         default:
+          console.log('SessionUnsuportedMethodModal', request.method);
           // return ModalStore.open('SessionUnsuportedMethodModal', {
           //   requestEvent,
           //   requestSession,
@@ -62,7 +86,7 @@ export default function useWalletConnectEvents(initialized: boolean) {
           break;
       }
     },
-    [],
+    [dispatch],
   );
 
   /******************************************************************************
@@ -76,7 +100,6 @@ export default function useWalletConnectEvents(initialized: boolean) {
       // auth
       web3wallet.on('auth_request', onAuthRequest);
       // web3wallet.on('session_delete', data => {
-      //   console.log('session_delete event received', data);
       //   SettingsStore.setSessions(
       //     Object.values(web3wallet.getActiveSessions()),
       //   );
@@ -85,4 +108,4 @@ export default function useWalletConnectEvents(initialized: boolean) {
       // SettingsStore.setSessions(Object.values(web3wallet.getActiveSessions()));
     }
   }, [initialized, onAuthRequest, onSessionProposal, onSessionRequest]);
-}
+};

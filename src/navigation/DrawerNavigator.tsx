@@ -1,13 +1,24 @@
 import React from 'react';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import {Contacts, SavedContacts, SendMoney} from '../screens';
+import {
+  Contacts,
+  SavedContacts,
+  SendMoney,
+  Settings,
+  Home,
+  Scan,
+  TransactionHistory,
+  TokenBalances,
+} from '../screens';
 import {DrawerNavigatorRoutes} from '../../types/navigation';
 import {useThemedStyles} from '../hooks';
 import {
   ContactsIcon,
+  HomeIcon,
   SavedContactsIcon,
   SendMoneyIcon,
-} from '../components/icons/DrawerIcons';
+  SettingsIcon,
+} from '../components';
 
 const Drawer = createDrawerNavigator<DrawerNavigatorRoutes>();
 
@@ -16,6 +27,7 @@ const DrawerNavigator = () => {
 
   return (
     <Drawer.Navigator
+      initialRouteName="Home"
       screenOptions={{
         drawerType: 'slide',
         drawerActiveBackgroundColor: 'transparent',
@@ -40,6 +52,11 @@ const DrawerNavigator = () => {
         headerShown: false,
       }}>
       <Drawer.Screen
+        name="Home"
+        component={Home}
+        options={{drawerIcon: HomeIcon}}
+      />
+      <Drawer.Screen
         name="SavedContacts"
         component={SavedContacts}
         options={{
@@ -51,9 +68,7 @@ const DrawerNavigator = () => {
       <Drawer.Screen
         name="Contacts"
         component={Contacts}
-        options={{
-          drawerIcon: ContactsIcon,
-        }}
+        options={{drawerIcon: ContactsIcon}}
       />
       <Drawer.Screen
         name="SendMoney"
@@ -63,6 +78,29 @@ const DrawerNavigator = () => {
           title: 'Send Money',
           drawerIcon: SendMoneyIcon,
         }}
+      />
+      <Drawer.Screen
+        name="Settings"
+        component={Settings}
+        options={{drawerIcon: SettingsIcon}}
+      />
+      <Drawer.Screen
+        name="Scan"
+        component={Scan}
+        options={{
+          unmountOnBlur: true,
+          drawerItemStyle: {display: 'none'},
+        }}
+      />
+      <Drawer.Screen
+        name="TransactionHistory"
+        component={TransactionHistory}
+        options={{drawerItemStyle: {display: 'none'}}}
+      />
+      <Drawer.Screen
+        name="TokenBalances"
+        component={TokenBalances}
+        options={{drawerItemStyle: {display: 'none'}}}
       />
     </Drawer.Navigator>
   );

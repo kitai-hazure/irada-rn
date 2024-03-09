@@ -3,3 +3,7 @@ export * from './useContacts';
 export * from './useContactsQuery';
 export * from './useModal';
 export * from './useThemedStyles';
+export * from './useWalletConnectEvents';
+export * from './useWalletConnectInitialize';
+export * from './useTransactionsFromQuery';
+export * from './useTransactionsToQuery';

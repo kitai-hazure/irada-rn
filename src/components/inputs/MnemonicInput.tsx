@@ -11,24 +11,35 @@ import {Theme} from '../../config';
 import {useThemedStyles} from '../../hooks';
 
 type MnemonicInputProps = {
-  values: string[];
-  setValues: React.Dispatch<React.SetStateAction<string[]>>;
+  values?: string[];
+  setValues?: React.Dispatch<React.SetStateAction<string[]>>;
+  editable?: boolean;
 };
 
-export const MnemonicInput = ({values, setValues}: MnemonicInputProps) => {
+export const MnemonicInput = ({
+  values,
+  setValues,
+  editable = true,
+}: MnemonicInputProps) => {
   const themedStyles = useThemedStyles(styles);
   const inputRefs = React.useRef<Array<TextInput | null>>([]);
 
+  if (!values) {
+    return null;
+  }
+
   const onChangeText = (text: string, index: number) => {
+    // if the user types a space, move to the next input
     if (text.includes(' ')) {
-      inputRefs.current[index]?.setNativeProps({
-        text: text.trim(),
-      });
       if (index < inputRefs.current.length - 1) {
         inputRefs.current[index + 1]?.focus();
       }
     }
-    setValues(prev => {
+    // only allow lowercase letters
+    if (!/^[a-z]*$/.test(text)) {
+      return;
+    }
+    setValues?.(prev => {
       const newValues = [...prev];
       newValues[index] = text.trim();
       return newValues;
@@ -46,25 +57,28 @@ export const MnemonicInput = ({values, setValues}: MnemonicInputProps) => {
     }
   };
 
-  console.log('values', values);
-
   return (
-    <>
-      <FlatList
-        data={Array(12)}
-        numColumns={3}
-        columnWrapperStyle={themedStyles.row}
-        renderItem={({index}) => (
-          <TextInput
-            ref={element => (inputRefs.current[index] = element)}
-            style={themedStyles.box}
-            onKeyPress={event => onKeyPress({...event, index})}
-            onChangeText={txt => onChangeText(txt, index)}
-          />
-        )}
-        keyExtractor={(_, index) => index.toString()}
-      />
-    </>
+    <FlatList
+      data={Array(12)}
+      style={themedStyles.flatlist}
+      numColumns={3}
+      columnWrapperStyle={themedStyles.row}
+      showsVerticalScrollIndicator={false}
+      scrollEnabled={false}
+      renderItem={({index}) => (
+        <TextInput
+          editable={editable}
+          value={values[index]}
+          ref={element => (inputRefs.current[index] = element)}
+          style={themedStyles.box}
+          onKeyPress={event => onKeyPress({...event, index})}
+          onChangeText={txt => onChangeText(txt, index)}
+          keyboardType="default"
+          autoCapitalize="none"
+        />
+      )}
+      keyExtractor={(_, index) => index.toString()}
+    />
   );
 };
 
@@ -75,7 +89,7 @@ const styles = (theme: Theme) =>
       borderRadius: 5,
       borderWidth: 1,
       fontSize: 16,
-      padding: 10,
+      padding: 8,
       width: '100%',
       height: 400,
     },
@@ -83,7 +97,7 @@ const styles = (theme: Theme) =>
       backgroundColor: theme.container,
       padding: 16,
       borderRadius: 16,
-      width: Dimensions.get('window').width / 3.5,
+      width: Math.min(Dimensions.get('window').width / 3.5, 150),
       textAlign: 'center',
       color: theme.text,
       fontWeight: '500',
@@ -92,5 +106,8 @@ const styles = (theme: Theme) =>
     row: {
       flex: 1,
       justifyContent: 'space-around',
+    },
+    flatlist: {
+      flexGrow: 0,
     },
   });

@@ -12,12 +12,20 @@ export type DrawerNavigatorRoutes = {
   };
   Contacts: undefined;
   SavedContacts: undefined;
+  Settings: undefined;
+  Scan: undefined;
+  TransactionHistory: undefined;
+  TokenBalances: undefined;
+  Swap: undefined;
 };
 
 export type AppNavigatorRoutes = {
   Login: undefined;
   Main: undefined;
-  Mnemonic: undefined;
+  CreateWallet: undefined;
+  ImportWallet: undefined;
+  Onboarding: undefined;
+  BiometricLogin: undefined;
 };
 
 export interface DrawerNavigationProps<

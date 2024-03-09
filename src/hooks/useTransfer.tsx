@@ -1,6 +1,5 @@
 import {ethers} from 'ethers';
 import {SupportedChains, SupportedCurrencies} from '../../types/chain';
-import {useWallet} from './useWallet';
 import {useERC20} from './useERC20';
 
 type TransferOptions = {
@@ -11,7 +10,7 @@ type TransferOptions = {
 };
 
 export const useTransfer = () => {
-  const {signer} = useWallet();
+  let signer: any;
   const {attachTo, contract} = useERC20();
 
   const transfer = async ({to, amount, chain, currency}: TransferOptions) => {

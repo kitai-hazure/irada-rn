@@ -3,3 +3,8 @@ export * from './modals';
 export * from './contact';
 export * from './dropdowns';
 export * from './inputs';
+export * from './buttons';
+export * from './icons';
+export * from './walletconnect';
+export * from './transactions';
+export * from './misc';

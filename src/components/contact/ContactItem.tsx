@@ -52,8 +52,8 @@ const styles = (theme: Theme) =>
     container: {
       flexDirection: 'row',
       alignItems: 'center',
-      margin: 10,
       backgroundColor: theme.container,
+      marginVertical: 8,
       padding: 16,
       borderRadius: 16,
     },

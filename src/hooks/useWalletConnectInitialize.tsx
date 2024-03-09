@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useState} from 'react';
 import {createWeb3Wallet} from '../config';
 
-export default function useInitialization() {
+export const useWalletConnectInitialize = () => {
   const [initialized, setInitialized] = useState(false);
 
   const init = useCallback(async () => {
@@ -19,4 +19,4 @@ export default function useInitialization() {
   }, [initialized, init]);
 
   return initialized;
-}
+};

@@ -1,11 +1,12 @@
 import {FlatList, StyleSheet, View} from 'react-native';
 import React from 'react';
 import {Theme} from '../config';
-import {useContacts, useThemedStyles} from '../hooks';
+import {useThemedStyles} from '../hooks';
 import {ContactItemSmall, DrawerLayout} from '../components';
 
 export const SavedContacts = () => {
-  const {savedContacts} = useContacts();
+  // const {savedContacts} = useContacts();
+  const savedContacts: any = [];
   const themedStyles = useThemedStyles(styles);
 
   return (

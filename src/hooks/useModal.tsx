@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {InteractionManager, Platform, StyleSheet, View} from 'react-native';
 import Modal from 'react-native-modal';
 import {useThemedStyles} from './useThemedStyles';
 import {Theme} from '../config';
@@ -13,7 +13,13 @@ export const useModal = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleOpen = () => {
-    setIsOpen(true);
+    if (Platform.OS === 'ios') {
+      InteractionManager.runAfterInteractions(() => {
+        setIsOpen(true);
+      });
+    } else {
+      setIsOpen(true);
+    }
   };
 
   const handleClose = () => {

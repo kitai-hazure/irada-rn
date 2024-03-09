@@ -1,9 +1,4 @@
-import '@walletconnect/react-native-compat';
-import '@ethersproject/shims';
 import {ENV} from './env';
-import {Props} from '@walletconnect/modal-react-native/src/modal/wcm-modal';
-import Clipboard from '@react-native-clipboard/clipboard';
-import Haptics from 'expo-haptics';
 import {Core} from '@walletconnect/core';
 import {IWeb3Wallet, Web3Wallet} from '@walletconnect/web3wallet';
 
@@ -34,38 +29,14 @@ export const wcAccounts = (wallets: string[]) => {
     .flat();
 };
 
-export const walletconnectProps: Props = {
-  projectId: ENV.WALLET_CONNECT_PROJECT_ID,
-  providerMetadata: {
-    name: 'Irada',
-    description: 'Your web3 wallet and assistant',
-    url: 'www.walletconnect.com',
-    icons: ['https://avatars.githubusercontent.com/u/37784886'],
-    redirect: {
-      native: 'irada://',
-    },
-  },
-  themeMode: 'dark',
-  onCopyClipboard: text => {
-    Clipboard.setString(text);
-    Haptics.impactAsync();
-  },
-  sessionParams: {
-    namespaces: {
-      eip155: {
-        chains: wcChains,
-        events: wcEvents,
-        methods: wcMethods,
-        rpcMap: {},
-        defaultChain: `eip155:${ENV.CHAIN_IDS[0]}`,
-      },
-    },
-  },
-};
-
 export let web3wallet: IWeb3Wallet;
 
 export const createWeb3Wallet = async () => {
+  if (web3wallet !== undefined) {
+    console.log('Web3Wallet already created');
+    return;
+  }
+
   const core = new Core({
     projectId: ENV.WALLET_CONNECT_PROJECT_ID,
   });
@@ -78,5 +49,6 @@ export const createWeb3Wallet = async () => {
       url: 'www.walletconnect.com',
       icons: ['https://avatars.githubusercontent.com/u/37784886'],
     },
+    name: 'Irada Wallet',
   });
 };

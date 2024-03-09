@@ -1,20 +1,23 @@
-import {ActivityIndicator, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
 import React from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
-import {useContacts, useThemedStyles} from '../../hooks';
+import {useContactsQuery, useThemedStyles} from '../../hooks';
 import {Contact} from 'expo-contacts';
 import {Theme} from '../../config';
+import {Errored, Loader} from '../misc';
 
 type ContactDropdownProps = {
   onChange: (contact: Contact) => void;
 };
 
 export const ContactDropdown = ({onChange}: ContactDropdownProps) => {
-  const {contacts} = useContacts();
+  const {data: contacts, isLoading, isError} = useContactsQuery();
   const themedStyles = useThemedStyles(styles);
 
-  if (!contacts) {
-    return <ActivityIndicator size={'large'} />;
+  if (isError) {
+    return <Errored />;
+  } else if (isLoading || !contacts) {
+    return <Loader />;
   }
 
   return (

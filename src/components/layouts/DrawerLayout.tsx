@@ -1,11 +1,20 @@
-import React, {PropsWithChildren} from 'react';
-import {StatusBar, StyleSheet} from 'react-native';
+import React from 'react';
+import {SafeAreaView, StyleSheet} from 'react-native';
 import Animated, {interpolate, useAnimatedStyle} from 'react-native-reanimated';
 import {useDrawerProgress} from '@react-navigation/drawer';
 import {Theme} from '../../config';
 import {useThemedStyles} from '../../hooks';
+import Constants from 'expo-constants';
 
-export const DrawerLayout: React.FC<PropsWithChildren> = ({children}) => {
+type DrawerLayoutProps = {
+  children: React.ReactNode;
+  isPadded?: boolean;
+};
+
+export const DrawerLayout = ({
+  children,
+  isPadded = true,
+}: DrawerLayoutProps) => {
   const progress = useDrawerProgress();
   const themedStyles = useThemedStyles(styles);
   const animatedStyle = useAnimatedStyle(() => ({
@@ -25,7 +34,12 @@ export const DrawerLayout: React.FC<PropsWithChildren> = ({children}) => {
   }));
 
   return (
-    <Animated.View style={[themedStyles.container, animatedStyle]}>
+    <Animated.View
+      style={[
+        themedStyles.container,
+        animatedStyle,
+        isPadded ? themedStyles.paddings : null,
+      ]}>
       {children}
     </Animated.View>
   );
@@ -36,8 +50,9 @@ const styles = (theme: Theme) =>
     container: {
       flex: 1,
       backgroundColor: theme.background,
-      paddingTop: 16 + (StatusBar.currentHeight ?? 0),
+    },
+    paddings: {
+      paddingTop: (Constants.currentHeight ?? 16) + 16,
       paddingHorizontal: 16,
-      paddingVertical: 16,
     },
   });

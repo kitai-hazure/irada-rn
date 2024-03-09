@@ -1,5 +1,6 @@
 import React from 'react';
 import Animated, {
+  Easing,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
@@ -7,17 +8,20 @@ import Animated, {
 } from 'react-native-reanimated';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
+import {ViewProps} from 'react-native';
 
 type GestureButtonProps = {
   children: React.ReactNode;
   scale?: number;
   impactStyle?: Haptics.ImpactFeedbackStyle;
-};
+} & ViewProps;
 
 export const GestureButton = ({
   children,
-  scale = 1.2,
+  scale = 1.05,
   impactStyle = Haptics.ImpactFeedbackStyle.Light,
+  style,
+  ...rest
 }: GestureButtonProps) => {
   const pressed = useSharedValue(false);
 
@@ -35,12 +39,21 @@ export const GestureButton = ({
     });
 
   const animatedStyles = useAnimatedStyle(() => ({
-    transform: [{scale: withTiming(pressed.value ? scale : 1)}],
+    transform: [
+      {
+        scale: withTiming(pressed.value ? scale : 1, {
+          duration: 300,
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+        }),
+      },
+    ],
   }));
 
   return (
     <GestureDetector gesture={tap}>
-      <Animated.View style={animatedStyles}>{children}</Animated.View>
+      <Animated.View style={[animatedStyles, style]} {...rest}>
+        {children}
+      </Animated.View>
     </GestureDetector>
   );
 };

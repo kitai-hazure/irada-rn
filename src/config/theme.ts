@@ -10,6 +10,8 @@ export type Theme = {
   container: string;
   text: string;
   lightText: string;
+  transparent: string;
+  blurType: 'dark' | 'light' | 'xlight';
 };
 
 const COMMON_THEME = {
@@ -20,6 +22,7 @@ const COMMON_THEME = {
   blue: '#82DAE9',
   white: '#FFFFFF',
   black: '#000000',
+  transparent: 'transparent',
 };
 
 export const LIGHT_THEME: Theme = {
@@ -28,6 +31,7 @@ export const LIGHT_THEME: Theme = {
   container: '#FFFFFF',
   text: '#000',
   lightText: '#A9A9A9',
+  blurType: 'dark',
 };
 
 export const DARK_THEME: Theme = {
@@ -36,4 +40,5 @@ export const DARK_THEME: Theme = {
   container: '#202324',
   text: '#FFFFFF',
   lightText: '#606162',
+  blurType: 'light',
 };

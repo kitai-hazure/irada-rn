@@ -1,11 +1,17 @@
 import React from 'react';
-import {useThemedStyles} from '../hooks';
+import {
+  useThemedStyles,
+  useWalletConnectEvents,
+  useWalletConnectInitialize,
+} from '../hooks';
 import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import {linking} from '../config';
 import {OuterNavigator} from './OuterNavigator';
 
 const AppNavigator = () => {
   const themedStyles = useThemedStyles(() => {});
+  const initialized = useWalletConnectInitialize();
+  useWalletConnectEvents(initialized);
 
   return (
     <NavigationContainer
@@ -14,7 +20,7 @@ const AppNavigator = () => {
         ...DefaultTheme,
         colors: {
           ...DefaultTheme.colors,
-          background: themedStyles.theme.container,
+          background: themedStyles.theme.background,
         },
       }}>
       <OuterNavigator />

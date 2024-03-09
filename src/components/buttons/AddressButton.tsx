@@ -1,5 +1,5 @@
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
-import React, {useEffect} from 'react';
+import React from 'react';
 import {Theme} from '../../config';
 import {useThemedStyles} from '../../hooks';
 import Clipboard from '@react-native-clipboard/clipboard';

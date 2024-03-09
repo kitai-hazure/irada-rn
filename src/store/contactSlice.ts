@@ -16,10 +16,16 @@ export type ContactSliceData = {
       address: string;
     };
   };
+  addressMap: {
+    [key: string]: {
+      contactId: string;
+    };
+  };
 };
 
 const initialState: ContactSliceData = {
   contactMap: {},
+  addressMap: {},
 };
 
 const contactSlice = createSlice({
@@ -33,6 +39,7 @@ const contactSlice = createSlice({
       const {address} = action.payload;
       const contactId = action.payload.contactId;
       state.contactMap[contactId] = {address};
+      state.addressMap[address] = {contactId};
     },
 
     deleteAddressFromContact: (
@@ -40,15 +47,23 @@ const contactSlice = createSlice({
       action: PayloadAction<DeleteAddressFromContactOptions>,
     ) => {
       const contactId = action.payload.contactId;
+      const {address} = state.contactMap[contactId];
       delete state.contactMap[contactId];
+      delete state.addressMap[address];
+    },
+    clearContacts: state => {
+      state.contactMap = {};
+      state.addressMap = {};
     },
   },
 });
 
 export const selectContactMap = (state: {[key: string]: ContactSliceData}) =>
   state[REDUX_STORE.CONTACT].contactMap;
+export const selectAddressMap = (state: {[key: string]: ContactSliceData}) =>
+  state[REDUX_STORE.CONTACT].addressMap;
 
-export const {addAddressToContact, deleteAddressFromContact} =
+export const {addAddressToContact, deleteAddressFromContact, clearContacts} =
   contactSlice.actions;
 
 export default contactSlice.reducer;

@@ -1,23 +1,36 @@
 import React, {useState} from 'react';
-import {StyleSheet, View} from 'react-native';
-import {useContacts, useModal, useThemedStyles} from '../hooks';
-import {AddContactModal, DrawerLayout} from '../components';
+import {FlatList, StyleSheet, View} from 'react-native';
+import {useContactsQuery, useModal, useThemedStyles} from '../hooks';
+import {
+  AddContactModal,
+  DrawerLayout,
+  Empty,
+  Errored,
+  Header,
+  Loader,
+} from '../components';
 import {ContactItem} from '../components';
 import {Theme} from '../config';
-import Animated, {SlideInLeft, SlideInRight} from 'react-native-reanimated';
 
 export const Contacts = () => {
-  const {contacts} = useContacts();
+  const {data: contacts, isLoading, isError} = useContactsQuery();
   const [currentContact, setCurrentContact] = useState<number>();
   const {showModal, hideModal, ModalComponent} = useModal();
   const themedStyles = useThemedStyles(styles);
 
+  if (isError) {
+    return <Errored />;
+  } else if (isLoading) {
+    return <Loader />;
+  } else if (contacts?.length === 0) {
+    return <Empty message="No contacts found" />;
+  }
+
   return (
     <DrawerLayout>
+      <Header title="Contacts" />
       <View style={themedStyles.container}>
-        <Animated.FlatList
-          entering={SlideInRight.duration(500).delay(100)}
-          exiting={SlideInLeft.duration(500).delay(100)}
+        <FlatList
           data={contacts}
           renderItem={({item: contact, index}) => (
             <ContactItem

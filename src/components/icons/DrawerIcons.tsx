@@ -36,3 +36,23 @@ export const SendMoneyIcon = ({color, focused, size}: DrawerIconProps) => {
     />
   );
 };
+
+export const SettingsIcon = ({color, focused, size}: DrawerIconProps) => {
+  return (
+    <MaterialCommunityIcons
+      name={focused ? 'cog' : 'cog-outline'}
+      size={size}
+      color={color}
+    />
+  );
+};
+
+export const HomeIcon = ({color, focused, size}: DrawerIconProps) => {
+  return (
+    <MaterialCommunityIcons
+      name={focused ? 'home' : 'home-outline'}
+      size={size}
+      color={color}
+    />
+  );
+};

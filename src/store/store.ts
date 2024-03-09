@@ -11,21 +11,27 @@ import {
   persistReducer,
 } from 'redux-persist';
 
-import contactSlice from './contactSlice';
 import {REDUX_STORE} from '../config';
+import accountSlice from './accountSlice';
+import contactSlice from './contactSlice';
+import progressSlice from './progressSlice';
+import modalSlice from './modalSlice';
 import themeSlice from './themeSlice';
 
 const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  whitelist: [REDUX_STORE.CONTACT, REDUX_STORE.THEME],
-  blacklist: [],
+  whitelist: [REDUX_STORE.CONTACT, REDUX_STORE.THEME, REDUX_STORE.PROGRESS],
+  blacklist: [REDUX_STORE.ACCOUNT, REDUX_STORE.MODALS],
 };
 
 const rootReducer = combineReducers({
   [REDUX_STORE.CONTACT]: contactSlice,
   [REDUX_STORE.THEME]: themeSlice,
+  [REDUX_STORE.ACCOUNT]: accountSlice,
+  [REDUX_STORE.PROGRESS]: progressSlice,
+  [REDUX_STORE.MODALS]: modalSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

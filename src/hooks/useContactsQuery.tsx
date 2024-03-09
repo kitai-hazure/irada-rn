@@ -1,21 +1,24 @@
 import {useQuery} from '@tanstack/react-query';
 import {QUERY} from '../config';
-import {PermissionsAndroid} from 'react-native';
+import {Platform} from 'react-native';
 import * as Contacts from 'expo-contacts';
+import {request, PERMISSIONS} from 'react-native-permissions';
 
 export const useContactsQuery = () => {
   return useQuery({
     queryKey: [QUERY.CONTACTS],
     queryFn: async () => {
-      const status = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+      const res = await request(
+        Platform.OS === 'android'
+          ? PERMISSIONS.ANDROID.READ_CONTACTS
+          : PERMISSIONS.IOS.CONTACTS,
         {
+          message: 'Irada would like to view your contacts',
           title: 'Contacts',
-          message: 'Irada would like to view your contacts.',
           buttonPositive: 'Allow',
         },
       );
-      if (status === 'granted') {
+      if (res === 'granted') {
         const {data} = await Contacts.getContactsAsync({sort: 'firstName'});
         return data;
       } else {

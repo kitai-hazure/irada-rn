@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import * as Contacts from 'expo-contacts';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -6,9 +5,8 @@ import {
   addAddressToContact,
   deleteAddressFromContact,
 } from '../store';
-import {useContactsQuery} from './useContactsQuery';
 import {ethers} from 'ethers';
-import {useEffect, useState} from 'react';
+import {useCallback} from 'react';
 
 type AddAddressToContactOptions = {
   contact: Contacts.Contact;
@@ -24,10 +22,8 @@ type RemoveAddressFromContactOptions = {
 };
 
 export const useContacts = () => {
-  const [savedContacts, setSavedContacts] = useState<Contacts.Contact[]>([]);
   const contactMap = useSelector(selectContactMap);
   const dispatch = useDispatch();
-  const {data, error, isLoading} = useContactsQuery();
 
   const addToContact = ({contact, address}: AddAddressToContactOptions) => {
     if (!contact.id) {
@@ -44,7 +40,6 @@ export const useContacts = () => {
           contactId: contact.id,
         }),
       );
-      setSavedContacts(prev => [...prev, contact]);
     }
   };
 
@@ -58,7 +53,6 @@ export const useContacts = () => {
           contactId: contact.id,
         }),
       );
-      setSavedContacts(prev => prev.filter(c => c.id !== contact.id));
     }
   };
 
@@ -71,23 +65,14 @@ export const useContacts = () => {
     }
   };
 
-  useEffect(() => {
-    const saved = [];
-    for (const contact of data || []) {
-      if (contact.id && contactMap[contact.id]?.address) {
-        saved.push(contact);
-      }
-    }
-    setSavedContacts(saved);
-  }, [data]);
+  const getParticularContact = useCallback(async (id: string) => {
+    return await Contacts.getContactByIdAsync(id);
+  }, []);
 
   return {
-    contacts: data,
-    isLoadingContacts: isLoading,
-    errorLoadingContacts: error,
     addToContact,
     removeFromContact,
     getAddressFromContact,
-    savedContacts,
+    getParticularContact,
   };
 };

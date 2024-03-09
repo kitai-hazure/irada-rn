@@ -50,5 +50,11 @@
 	<false/>
 	<key>NSContactsUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to access your contacts</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to authenticate you</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to use the camera</string>
+	<!-- <key>NSMicrophoneUsageDescription</key> -->
+	<!-- <string>Allow $(PRODUCT_NAME) to use the microphone</string> -->
 </dict>
 </plist>
