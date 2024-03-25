@@ -1176,6 +1176,11 @@ PODS:
     - React-Core
   - RNKeychain (8.1.3):
     - React-Core
+  - RNNotifee (7.8.2):
+    - React-Core
+    - RNNotifee/NotifeeCore (= 7.8.2)
+  - RNNotifee/NotifeeCore (7.8.2):
+    - React-Core
   - RNOS (1.2.6):
     - React
   - RNPermissions (4.1.4):
@@ -1296,6 +1301,7 @@ DEPENDENCIES:
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
+  - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNOS (from `../node_modules/react-native-os`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
@@ -1462,6 +1468,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNKeychain:
     :path: "../node_modules/react-native-keychain"
+  RNNotifee:
+    :path: "../node_modules/@notifee/react-native"
   RNOS:
     :path: "../node_modules/react-native-os"
   RNPermissions:
@@ -1560,6 +1568,7 @@ SPEC CHECKSUMS:
   RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
   RNGestureHandler: deda62b8339496ba721a45e0f3e2d7a319932cee
   RNKeychain: f1b48665a4646f61191eb048c4c05c58d9a7596f
+  RNNotifee: 8e2d3df3f0e9ce8f5d1fe4c967431138190b6175
   RNOS: 6f2f9a70895bbbfbdad7196abd952e7b01d45027
   RNPermissions: ed4a40f4714f536e71e8606e323a6512164c0000
   RNReanimated: beb07f7f900543928467da8107c175d1e57a1049
