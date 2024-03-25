@@ -10,9 +10,10 @@ import * as Contact from 'expo-contacts';
 
 type ContactOrAddrProps = {
   address: string;
+  padded?: boolean;
 };
 
-export const ContactOrAddr = ({address}: ContactOrAddrProps) => {
+export const ContactOrAddr = ({address, padded = true}: ContactOrAddrProps) => {
   const addressMap = useSelector(selectAddressMap);
   const [contact, setContact] = useState<Contact.Contact>();
   const themedStyles = useThemedStyles(styles);
@@ -20,7 +21,7 @@ export const ContactOrAddr = ({address}: ContactOrAddrProps) => {
 
   useEffect(() => {
     (async () => {
-      const contactId = addressMap[address]?.contactId;
+      const contactId = addressMap[address.toLowerCase()]?.contactId;
       if (contactId) {
         const res = await getParticularContact(contactId);
         if (res) {
@@ -31,7 +32,7 @@ export const ContactOrAddr = ({address}: ContactOrAddrProps) => {
   }, [address, addressMap, getParticularContact]);
 
   return (
-    <View style={themedStyles.container}>
+    <View style={[themedStyles.container, padded && themedStyles.padded]}>
       {contact ? (
         <View style={themedStyles.contactContainer}>
           {contact.image ? (
@@ -45,14 +46,14 @@ export const ContactOrAddr = ({address}: ContactOrAddrProps) => {
             </View>
           )}
           <Text style={themedStyles.contactName}>
-            {contact.name?.length > 15
-              ? `${contact.name.slice(0, 15)}...`
+            {contact.name?.length > 8
+              ? `${contact.name.slice(0, 8)}...`
               : contact.name}
           </Text>
-          <AddressButton address={address} />
+          <AddressButton address={address} padded={false} />
         </View>
       ) : (
-        <AddressButton address={address} />
+        <AddressButton address={address} padded={false} />
       )}
     </View>
   );
@@ -63,6 +64,9 @@ const styles = (theme: Theme) =>
     container: {
       backgroundColor: theme.container,
       borderRadius: 16,
+    },
+    padded: {
+      padding: 8,
     },
     image: {
       width: 30,

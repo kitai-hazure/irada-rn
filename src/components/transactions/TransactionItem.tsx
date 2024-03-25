@@ -6,6 +6,7 @@ import {ContactOrAddr} from '../contact';
 import {AssetTransfersCategory, AssetTransfersResult} from 'alchemy-sdk';
 import {useSelector} from 'react-redux';
 import {selectCurrentChain} from '../../store';
+import {Entypo} from '@expo/vector-icons';
 
 export type TransactionItemProps = {
   item: AssetTransfersResult;
@@ -32,10 +33,13 @@ export const TransactionItem = ({item, received}: TransactionItemProps) => {
   }, [item.category]);
 
   return (
-    <Pressable
-      onPress={() => handleOpenUrl(item.hash)}
-      style={themedStyles.item}>
-      <Text style={themedStyles.itemTitle}>{title}</Text>
+    <View style={themedStyles.item}>
+      <View style={themedStyles.row}>
+        <Text style={themedStyles.itemTitle}>{title}</Text>
+        <Pressable onPress={() => handleOpenUrl(item.hash)}>
+          <Entypo name="link" size={20} color={themedStyles.theme.text} />
+        </Pressable>
+      </View>
       {item.from && (
         <View style={themedStyles.miniItem}>
           <Text style={themedStyles.label}>From:</Text>
@@ -50,7 +54,7 @@ export const TransactionItem = ({item, received}: TransactionItemProps) => {
       )}
       {item.value && (
         <View style={themedStyles.miniItem}>
-          <Text style={themedStyles.label}>Amount:</Text>
+          <Text style={themedStyles.label}>Value:</Text>
           <Text style={themedStyles.value}>
             <Text
               style={received ? themedStyles.positive : themedStyles.negative}>
@@ -65,7 +69,7 @@ export const TransactionItem = ({item, received}: TransactionItemProps) => {
           </Text>
         </View>
       )}
-    </Pressable>
+    </View>
   );
 };
 
@@ -84,7 +88,6 @@ const styles = (theme: Theme) =>
       color: theme.text,
       fontSize: 16,
       fontWeight: 'bold',
-      marginBottom: 8,
     },
     miniItem: {
       flexDirection: 'row',
@@ -94,9 +97,9 @@ const styles = (theme: Theme) =>
     },
     label: {
       color: theme.text,
-      flex: 0.3,
       fontSize: 14,
       fontWeight: 'bold',
+      width: '17%',
     },
     value: {
       color: theme.text,
@@ -109,5 +112,11 @@ const styles = (theme: Theme) =>
     },
     negative: {
       color: theme.orange,
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      marginBottom: 8,
     },
   });

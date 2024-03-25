@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   Image,
   Linking,
@@ -14,7 +14,6 @@ import {ModalBottomButtons, WarningNote, ModalAddress} from '../walletconnect';
 import {useSelector, useDispatch} from 'react-redux';
 import {closeProposalModal, selectProposalModal} from '../../store';
 import {buildApprovedNamespaces} from '@walletconnect/utils';
-import type {SessionTypes} from '@walletconnect/types';
 import {ToastHelper} from '../../helpers';
 
 export const SessionProposal = () => {
@@ -22,9 +21,19 @@ export const SessionProposal = () => {
   const [imageLoadError, setImageLoadError] = useState(false);
   const {params, verifyContext, id} = useSelector(selectProposalModal);
   const dispatch = useDispatch();
-  const [namespaces, setNamespaces] = useState<SessionTypes.Namespaces>();
 
   const {accept, reject, getSupportedNamespaces} = useWallet();
+
+  const namespaces = useMemo(() => {
+    if (params) {
+      const supportedNamespaces = getSupportedNamespaces();
+      const ns = buildApprovedNamespaces({
+        proposal: params,
+        supportedNamespaces,
+      });
+      return ns;
+    }
+  }, [getSupportedNamespaces, params]);
 
   const handleApproveSession = async () => {
     try {
@@ -77,24 +86,6 @@ export const SessionProposal = () => {
       Linking.openURL(url);
     }
   };
-
-  useEffect(() => {
-    if (params) {
-      try {
-        const supportedNamespaces = getSupportedNamespaces();
-        const ns = buildApprovedNamespaces({
-          proposal: params,
-          supportedNamespaces,
-        });
-        setNamespaces(ns);
-      } catch (error) {
-        console.error(
-          'Error building approved namespaces, possibly chain not supported.',
-          error,
-        );
-      }
-    }
-  }, [getSupportedNamespaces, params]);
 
   return (
     <View style={themedStyles.container}>

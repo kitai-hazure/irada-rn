@@ -45,6 +45,7 @@ export const CreateContactModal = () => {
     <View style={themedStyles.container}>
       <TextInput
         value={name}
+        returnKeyType="done"
         onChangeText={txt => setName(txt)}
         placeholder="Add name here"
         style={themedStyles.input}

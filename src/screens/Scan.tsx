@@ -133,7 +133,7 @@ const styles = (theme: Theme) =>
       width: 50,
       height: 50,
       borderRadius: 25,
-      alignSelf: 'center',
+      alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: theme.purple,
       zIndex: 1,

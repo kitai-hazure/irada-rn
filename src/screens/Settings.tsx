@@ -1,13 +1,12 @@
 import {
   Linking,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {CONSTANTS, Theme} from '../config';
 import {useThemedStyles} from '../hooks';
 import {
@@ -16,6 +15,7 @@ import {
   DrawerLayout,
   GestureButton,
   Header,
+  IradaButton,
 } from '../components';
 import {KeychainHelper, ToastHelper} from '../helpers';
 import {useDispatch} from 'react-redux';
@@ -26,6 +26,7 @@ import {
   openMnemonicModal,
   setHasWalletCreated,
   clearScheduledTransactions,
+  setIsFirstLogin,
 } from '../store';
 import {
   DrawerNavigationProps,
@@ -38,15 +39,18 @@ export const Settings = ({
 }: DrawerNavigationProps<DrawerNavigatorRoutes, 'Settings'>) => {
   const themedStyles = useThemedStyles(styles);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
     try {
+      setLoading(true);
       await KeychainHelper.reset();
       dispatch(clearAccountData());
       dispatch(clearContacts());
       dispatch(clearModalData());
       dispatch(clearScheduledTransactions());
       dispatch(setHasWalletCreated(false));
+      dispatch(setIsFirstLogin(true));
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
@@ -60,6 +64,8 @@ export const Settings = ({
         text1: 'Error',
         text2: error.message ?? 'Failed to clear data, please try again',
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,11 +84,13 @@ export const Settings = ({
             reveal it
           </Text>
           <GestureButton>
-            <Pressable
+            <IradaButton
+              textColor="white"
+              color="purple"
               onPress={handleRevealMnemonic}
-              style={[themedStyles.button, themedStyles.buttonPurple]}>
-              <Text style={themedStyles.buttonText}>Reveal Mnemonic</Text>
-            </Pressable>
+              style={themedStyles.button}>
+              Reveal Mnemonic
+            </IradaButton>
           </GestureButton>
         </View>
         <View style={themedStyles.sectionContainer}>
@@ -93,13 +101,15 @@ export const Settings = ({
           <Text style={themedStyles.sectionTitle}>Accounts</Text>
           <AccountButton />
           <GestureButton>
-            <Pressable
+            <IradaButton
+              textColor="white"
+              color="orange"
               onPress={handleLogout}
-              style={[themedStyles.button, themedStyles.buttonRed]}>
-              <Text style={themedStyles.buttonText}>
-                Clear data and log out
-              </Text>
-            </Pressable>
+              loading={loading}
+              loaderColor="white"
+              style={themedStyles.button}>
+              Clear data and log out
+            </IradaButton>
           </GestureButton>
         </View>
         <View style={themedStyles.sectionContainer}>
@@ -145,23 +155,8 @@ const styles = (theme: Theme) =>
       fontSize: 14,
       color: theme.text,
     },
-    buttonText: {
-      color: theme.text,
-      fontSize: 14,
-    },
     button: {
-      opacity: 0.9,
-      padding: 16,
-      borderRadius: 16,
-      alignItems: 'center',
-      justifyContent: 'center',
       marginTop: 16,
-    },
-    buttonRed: {
-      backgroundColor: theme.orange,
-    },
-    buttonPurple: {
-      backgroundColor: theme.purple,
     },
     inlineButton: {
       color: theme.purple,

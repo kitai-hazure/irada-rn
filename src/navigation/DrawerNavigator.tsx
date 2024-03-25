@@ -1,5 +1,4 @@
 import React from 'react';
-import {createDrawerNavigator} from '@react-navigation/drawer';
 import {
   Contacts,
   SavedContacts,
@@ -11,7 +10,6 @@ import {
   TokenBalances,
   ScheduleTransactions,
 } from '../screens';
-import {DrawerNavigatorRoutes} from '../../types/navigation';
 import {
   useAlchemyInitialize,
   useStartNotifeeModals,
@@ -31,8 +29,7 @@ import {
   TokenBalancesIcon,
   TransactionHistoryIcon,
 } from '../components';
-
-const Drawer = createDrawerNavigator<DrawerNavigatorRoutes>();
+import {Drawer} from './navigators';
 
 export const DrawerNavigator = () => {
   const themedStyles = useThemedStyles(() => {});

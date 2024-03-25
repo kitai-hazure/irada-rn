@@ -76,7 +76,7 @@ const styles = (theme: Theme) =>
     itemContainer: {
       flex: 1,
       justifyContent: 'flex-start',
-      marginTop: height / 10,
+      marginTop: height / 4,
       alignItems: 'center',
       width: width,
     },

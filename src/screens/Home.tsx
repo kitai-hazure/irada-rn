@@ -19,6 +19,7 @@ import {FormatHelper} from '../helpers';
 import {useSelector} from 'react-redux';
 import {selectCurrentAddress, selectCurrentChain} from '../store';
 import Animated, {FadeIn} from 'react-native-reanimated';
+import {ethers} from 'ethers';
 
 export type HeroButtonType = {
   title: string;
@@ -106,7 +107,9 @@ export const Home = ({
         <Text style={themedStyles.balance}>Balance</Text>
         <Text style={themedStyles.balanceValue} numberOfLines={1}>
           {nativeBalance
-            ? `${nativeBalance.toString()} ${chain.nativeCurrency.symbol}`
+            ? `${ethers.utils.formatEther(nativeBalance).slice(0, 10)} ${
+                chain.nativeCurrency.symbol
+              }`
             : 'Loading...'}
         </Text>
       </Animated.View>

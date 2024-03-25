@@ -35,7 +35,7 @@ export const ScheduledList = () => {
             </View>
             <View style={themedStyles.row}>
               <Text style={themedStyles.label}>To:</Text>
-              <ContactOrAddr address={item.to} />
+              <ContactOrAddr address={item.to} padded={false} />
             </View>
             <View style={themedStyles.row}>
               <Text style={themedStyles.label}>Amount:</Text>

@@ -1,5 +1,4 @@
 import React, {useMemo} from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
 import {AppNavigatorRoutes} from '../../types/navigation';
 import {
   CreateWallet,
@@ -12,8 +11,7 @@ import {
 import {useSelector} from 'react-redux';
 import {selectHasWalletCreated, selectIsFirstLogin} from '../store';
 import {DrawerNavigator} from './DrawerNavigator';
-
-const Stack = createStackNavigator<AppNavigatorRoutes>();
+import {OuterStack} from './navigators';
 
 export const OuterNavigator = () => {
   const isFirstLogin = useSelector(selectIsFirstLogin);
@@ -30,16 +28,16 @@ export const OuterNavigator = () => {
   }, [isFirstLogin, hasWalletCreated]);
 
   return (
-    <Stack.Navigator
+    <OuterStack.Navigator
       screenOptions={{headerShown: false}}
       initialRouteName={initialRouteName}>
-      <Stack.Screen name="Onboarding" component={Onboarding} />
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="BiometricLogin" component={BiometricLogin} />
-      <Stack.Screen name="CreateWallet" component={CreateWallet} />
-      <Stack.Screen name="ImportWallet" component={ImportWallet} />
-      <Stack.Screen name="EnableContacts" component={EnableContacts} />
-      <Stack.Screen name="Main" component={DrawerNavigator} />
-    </Stack.Navigator>
+      <OuterStack.Screen name="Onboarding" component={Onboarding} />
+      <OuterStack.Screen name="Login" component={Login} />
+      <OuterStack.Screen name="BiometricLogin" component={BiometricLogin} />
+      <OuterStack.Screen name="CreateWallet" component={CreateWallet} />
+      <OuterStack.Screen name="ImportWallet" component={ImportWallet} />
+      <OuterStack.Screen name="EnableContacts" component={EnableContacts} />
+      <OuterStack.Screen name="Main" component={DrawerNavigator} />
+    </OuterStack.Navigator>
   );
 };

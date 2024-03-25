@@ -83,7 +83,7 @@ const styles = (theme: Theme) =>
   StyleSheet.create({
     label: {
       color: theme.text,
-      flex: 0.3,
+      width: '17%',
       fontSize: 14,
       fontWeight: 'bold',
     },

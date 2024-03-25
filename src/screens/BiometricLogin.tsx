@@ -1,5 +1,5 @@
 import {Dimensions, StyleSheet, View} from 'react-native';
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {GestureButton, IradaButton, OnboardingWrapper} from '../components';
 import {AppNavigatorRoutes, StackNavigationProps} from '../../types/navigation';
 import {useThemedStyles} from '../hooks';
@@ -29,6 +29,7 @@ export const BiometricLogin = ({
 }: StackNavigationProps<AppNavigatorRoutes, 'BiometricLogin'>) => {
   const themedStyles = useThemedStyles(styles);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const fillAccountData = useCallback(
     async ({accountCount, mnemonic}: KeychainPasswordOptions) => {
@@ -59,6 +60,7 @@ export const BiometricLogin = ({
 
   const setup = useCallback(async () => {
     try {
+      setLoading(true);
       const values = await KeychainHelper.get();
       if (values && values.password) {
         const password = JSON.parse(values.password);
@@ -79,6 +81,8 @@ export const BiometricLogin = ({
         text1: 'Error',
         text2: error.message ?? 'Failed to setup your account',
       });
+    } finally {
+      setLoading(false);
     }
   }, [dispatch, navigation, fillAccountData]);
 
@@ -103,7 +107,12 @@ export const BiometricLogin = ({
           />
         </View>
         <GestureButton>
-          <IradaButton color="white" textColor="black" onPress={setup}>
+          <IradaButton
+            color="white"
+            textColor="black"
+            onPress={setup}
+            loading={loading}
+            loaderColor="black">
             Retry Biometric
           </IradaButton>
         </GestureButton>

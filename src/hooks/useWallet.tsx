@@ -1,4 +1,5 @@
 import {
+  CHAIN_LIST,
   EIP155_SIGNING_METHODS,
   wcAccounts,
   wcChains,
@@ -133,7 +134,9 @@ export const useWallet = () => {
     }
     const {params, id} = requestEvent;
     const {chainId, request} = params;
-    if (chainId !== currentChain.chainId) {
+    if (
+      CHAIN_LIST.map(c => c.chainId).includes(chainId.split(':')[1]) === false
+    ) {
       throw new Error(getSdkError('UNSUPPORTED_CHAINS').message);
     }
     const wallet = new Wallet(currentPrivateKey);

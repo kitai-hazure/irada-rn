@@ -64,7 +64,7 @@ export const useContacts = () => {
       if (!contact.id) {
         throw new Error('Invalid contact id');
       } else {
-        return contactMap[contact.id]?.address ?? undefined;
+        return contactMap[contact.id]?.address?.toLowerCase() ?? undefined;
       }
     },
     [contactMap],

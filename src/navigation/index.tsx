@@ -3,6 +3,7 @@ import {useThemedStyles} from '../hooks';
 import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import {linking} from '../config';
 import {OuterNavigator} from './OuterNavigator';
+import {Modals} from '../components';
 
 const AppNavigator = () => {
   const themedStyles = useThemedStyles(() => {});
@@ -17,6 +18,7 @@ const AppNavigator = () => {
         },
       }}>
       <OuterNavigator />
+      <Modals />
     </NavigationContainer>
   );
 };

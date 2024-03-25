@@ -43,6 +43,7 @@ export const AddContactModal = () => {
     <View style={themedStyles.container}>
       <TextInput
         value={address}
+        returnKeyType="done"
         onChangeText={txt => setAddress(txt)}
         placeholder="Add Address here"
         style={themedStyles.input}

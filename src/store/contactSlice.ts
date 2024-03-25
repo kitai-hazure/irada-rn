@@ -38,7 +38,7 @@ const contactSlice = createSlice({
     ) => {
       const {address} = action.payload;
       const contactId = action.payload.contactId;
-      state.contactMap[contactId] = {address};
+      state.contactMap[contactId] = {address: address.toLowerCase()};
       state.addressMap[address] = {contactId};
     },
 
@@ -49,7 +49,7 @@ const contactSlice = createSlice({
       const contactId = action.payload.contactId;
       const {address} = state.contactMap[contactId];
       delete state.contactMap[contactId];
-      delete state.addressMap[address];
+      delete state.addressMap[address.toLowerCase()];
     },
     clearContacts: state => {
       state.contactMap = {};

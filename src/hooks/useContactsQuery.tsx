@@ -12,7 +12,7 @@ export const useContactsQuery = () => {
     queryFn: async () => {
       const res = await request(
         Platform.OS === 'android'
-          ? PERMISSIONS.ANDROID.READ_CONTACTS
+          ? PERMISSIONS.ANDROID.WRITE_CONTACTS
           : PERMISSIONS.IOS.CONTACTS,
         {
           message: 'Irada would like to view your contacts',

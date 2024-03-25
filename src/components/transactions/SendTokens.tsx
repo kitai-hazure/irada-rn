@@ -1,6 +1,6 @@
 import {StyleSheet, Text, TextInput, View} from 'react-native';
 import React, {useEffect, useMemo, useState} from 'react';
-import {CONSTANTS, Theme} from '../../config';
+import {CONSTANTS, QUERY, Theme} from '../../config';
 import {
   useGasPriceQuery,
   useNativeBalanceQuery,
@@ -33,6 +33,7 @@ import {ModalAddress} from '../walletconnect';
 import {useNavigation} from '@react-navigation/native';
 import {DrawerNavigationProp} from '@react-navigation/drawer';
 import {DrawerNavigatorRoutes} from '../../../types/navigation';
+import {useQueryClient} from '@tanstack/react-query';
 
 type SendTokensProps = {
   type:
@@ -70,6 +71,7 @@ export const SendTokens = ({type}: SendTokensProps) => {
   const sendTokensModal = useSelector(selectSendTokensModal);
   const dispatch = useDispatch();
   const {data: savedContacts} = useSavedContacts();
+  const queryClient = useQueryClient();
   const navigation =
     useNavigation<DrawerNavigationProp<DrawerNavigatorRoutes, 'SendMoney'>>();
 
@@ -90,7 +92,9 @@ export const SendTokens = ({type}: SendTokensProps) => {
         sendTokensScheduledModal.scheduledTransaction
       ) {
         const {contactId} =
-          addressMap[sendTokensScheduledModal.scheduledTransaction.to];
+          addressMap[
+            sendTokensScheduledModal.scheduledTransaction.to.toLowerCase()
+          ];
         setAmount(sendTokensScheduledModal.scheduledTransaction.amount);
         setCurrency(sendTokensScheduledModal.scheduledTransaction.currency);
         setDescription(
@@ -244,6 +248,7 @@ export const SendTokens = ({type}: SendTokensProps) => {
           text1: 'Success',
           text2: 'Transfer successful!',
         });
+        queryClient.invalidateQueries({queryKey: [QUERY.TRANSACTIONS_TO]});
         navigation.navigate('Home');
       } catch (err: any) {
         ToastHelper.show({
@@ -306,7 +311,6 @@ export const SendTokens = ({type}: SendTokensProps) => {
           text1: 'Success',
           text2: 'Scheduled transaction created successfully',
         });
-        navigation.navigate('Home');
       } catch (err: any) {
         ToastHelper.show({
           type: 'error',
@@ -350,6 +354,7 @@ export const SendTokens = ({type}: SendTokensProps) => {
             value={amount}
             onChangeText={handleChangeAmount}
             keyboardType="numeric"
+            returnKeyType="done"
             placeholder="Enter amount to send"
             placeholderTextColor={themedStyles.placeholder.color}
             style={themedStyles.input}
@@ -408,6 +413,7 @@ export const SendTokens = ({type}: SendTokensProps) => {
           <View style={themedStyles.dropdownContainer}>
             <Text style={themedStyles.labelDate}>Repeats every:</Text>
             <TextInput
+              returnKeyType="done"
               style={themedStyles.input}
               value={interval}
               onChangeText={txt => setInterval(txt)}
@@ -418,6 +424,7 @@ export const SendTokens = ({type}: SendTokensProps) => {
           <View style={themedStyles.dropdownContainer}>
             <Text style={themedStyles.labelDate}>Description:</Text>
             <TextInput
+              returnKeyType="done"
               style={themedStyles.input}
               value={description}
               onChangeText={txt => setDescription(txt)}
@@ -440,6 +447,7 @@ const styles = (theme: Theme) =>
     input: {
       color: theme.text,
       fontSize: 16,
+      paddingVertical: 8,
     },
     submitButton: {
       marginTop: 16,

@@ -9,9 +9,10 @@ import {GestureButton} from './GestureButton';
 
 type AddressButtonProps = {
   address: string;
+  padded?: boolean;
 };
 
-export const AddressButton = ({address}: AddressButtonProps) => {
+export const AddressButton = ({address, padded = true}: AddressButtonProps) => {
   const themedStyles = useThemedStyles(styles);
 
   const onPress = async () => {
@@ -26,7 +27,9 @@ export const AddressButton = ({address}: AddressButtonProps) => {
 
   return (
     <GestureButton>
-      <TouchableOpacity onPress={onPress} style={themedStyles.container}>
+      <TouchableOpacity
+        onPress={onPress}
+        style={[themedStyles.container, padded && themedStyles.padded]}>
         <Feather name="copy" size={14} color={themedStyles.copyIcon.color} />
         <Text style={themedStyles.address}>
           {FormatHelper.formatAddress(address)}
@@ -43,6 +46,9 @@ const styles = (theme: Theme) =>
       alignItems: 'center',
       gap: 4,
       marginTop: 4,
+    },
+    padded: {
+      padding: 8,
     },
     address: {
       color: theme.text,
