@@ -4,7 +4,7 @@ import {Theme} from '../../config';
 import {useThemedStyles} from '../../hooks';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {Feather} from '@expo/vector-icons';
-import {FormatHelper} from '../../helpers';
+import {FormatHelper, ToastHelper} from '../../helpers';
 import {GestureButton} from './GestureButton';
 
 type AddressButtonProps = {
@@ -16,6 +16,12 @@ export const AddressButton = ({address}: AddressButtonProps) => {
 
   const onPress = async () => {
     Clipboard.setString(address);
+    ToastHelper.show({
+      type: 'success',
+      autoHide: true,
+      text1: 'Copied',
+      text2: 'Address copied to clipboard',
+    });
   };
 
   return (

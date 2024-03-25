@@ -22,6 +22,12 @@ export const AddContactModal = () => {
       if (contact) {
         addToContact({contact, address});
         dispatch(closeAddAddressToContactModal());
+        ToastHelper.show({
+          type: 'success',
+          autoHide: true,
+          text1: 'Success',
+          text2: 'Address added to contact',
+        });
       }
     } catch (error: any) {
       ToastHelper.show({

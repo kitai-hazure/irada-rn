@@ -30,6 +30,9 @@ import {
 } from '../dropdowns';
 import {TimeUnit} from '@notifee/react-native';
 import {ModalAddress} from '../walletconnect';
+import {useNavigation} from '@react-navigation/native';
+import {DrawerNavigationProp} from '@react-navigation/drawer';
+import {DrawerNavigatorRoutes} from '../../../types/navigation';
 
 type SendTokensProps = {
   type:
@@ -67,6 +70,8 @@ export const SendTokens = ({type}: SendTokensProps) => {
   const sendTokensModal = useSelector(selectSendTokensModal);
   const dispatch = useDispatch();
   const {data: savedContacts} = useSavedContacts();
+  const navigation =
+    useNavigation<DrawerNavigationProp<DrawerNavigatorRoutes, 'SendMoney'>>();
 
   useEffect(() => {
     if (type === 'SEND_WITH_PARAMS') {
@@ -233,6 +238,13 @@ export const SendTokens = ({type}: SendTokensProps) => {
           currency,
           gasLimit: ethers.BigNumber.from(estimatedGas),
         });
+        ToastHelper.show({
+          type: 'success',
+          autoHide: true,
+          text1: 'Success',
+          text2: 'Transfer successful!',
+        });
+        navigation.navigate('Home');
       } catch (err: any) {
         ToastHelper.show({
           type: 'error',
@@ -288,6 +300,13 @@ export const SendTokens = ({type}: SendTokensProps) => {
           description,
         });
         dispatch(closeCreateScheduledTransactionModal());
+        ToastHelper.show({
+          type: 'success',
+          autoHide: true,
+          text1: 'Success',
+          text2: 'Scheduled transaction created successfully',
+        });
+        navigation.navigate('Home');
       } catch (err: any) {
         ToastHelper.show({
           type: 'error',

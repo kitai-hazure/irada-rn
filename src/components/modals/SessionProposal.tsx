@@ -31,6 +31,12 @@ export const SessionProposal = () => {
       if (id && namespaces) {
         await accept(id, namespaces);
         dispatch(closeProposalModal());
+        ToastHelper.show({
+          type: 'success',
+          autoHide: true,
+          text1: 'Success',
+          text2: 'Session approved successfully',
+        });
       }
     } catch (error: any) {
       ToastHelper.show({
@@ -47,6 +53,12 @@ export const SessionProposal = () => {
       if (id) {
         await reject(id);
         dispatch(closeProposalModal());
+        ToastHelper.show({
+          type: 'success',
+          autoHide: true,
+          text1: 'Success',
+          text2: 'Session rejected successfully',
+        });
       }
     } catch (error: any) {
       ToastHelper.show({

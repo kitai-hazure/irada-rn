@@ -93,6 +93,12 @@ export const SessionSign = ({type}: SessionSignProps) => {
         topic,
         response,
       });
+      ToastHelper.show({
+        type: 'success',
+        autoHide: true,
+        text1: 'Success',
+        text2: 'Transaction signed',
+      });
     } catch (error: any) {
       ToastHelper.show({
         type: 'error',
@@ -111,6 +117,12 @@ export const SessionSign = ({type}: SessionSignProps) => {
       await web3wallet.respondSessionRequest({
         topic,
         response,
+      });
+      ToastHelper.show({
+        type: 'success',
+        autoHide: true,
+        text1: 'Success',
+        text2: 'Transaction rejected',
       });
     } catch (error: any) {
       ToastHelper.show({

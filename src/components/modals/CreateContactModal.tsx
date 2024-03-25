@@ -25,6 +25,12 @@ export const CreateContactModal = () => {
         address,
       );
       dispatch(closeCreateContactModal());
+      ToastHelper.show({
+        type: 'success',
+        autoHide: true,
+        text1: 'Success',
+        text2: 'Contact created successfully',
+      });
     } catch (error: any) {
       ToastHelper.show({
         type: 'error',

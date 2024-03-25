@@ -1,11 +1,13 @@
 import notifee, {
   AndroidChannel,
+  AuthorizationStatus,
   EventType,
   Notification,
   Trigger,
 } from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {CONSTANTS} from '../config';
+import {ToastHelper} from './ToastHelper';
 
 type CreateNotificationOptions = {
   trigger: Trigger;
@@ -22,18 +24,38 @@ export const NotifeeHelper = {
     notification,
     channel,
   }: DisplayNotificationOptions) {
-    await notifee.requestPermission();
-    await notifee.createChannel(channel);
-    await notifee.displayNotification(notification);
+    const {authorizationStatus} = await notifee.requestPermission();
+    if (authorizationStatus === AuthorizationStatus.AUTHORIZED) {
+      await notifee.createChannel(channel);
+      await notifee.displayNotification(notification);
+      return;
+    } else {
+      ToastHelper.show({
+        type: 'error',
+        autoHide: true,
+        text1: 'Error',
+        text2: 'Please enable notification permission',
+      });
+    }
   },
 
   async createTriggerNotification({
     notification,
     trigger,
   }: CreateNotificationOptions) {
-    await notifee.requestPermission();
-    await notifee.createChannel(NotifeeHelper.CHANNEL);
-    await notifee.createTriggerNotification(notification, trigger);
+    const {authorizationStatus} = await notifee.requestPermission();
+    if (authorizationStatus === AuthorizationStatus.AUTHORIZED) {
+      await notifee.createChannel(NotifeeHelper.CHANNEL);
+      await notifee.createTriggerNotification(notification, trigger);
+      return;
+    } else {
+      ToastHelper.show({
+        type: 'error',
+        autoHide: true,
+        text1: 'Error',
+        text2: 'Please enable notification permission',
+      });
+    }
   },
 
   async cancelTriggerNotification(id: string) {

@@ -27,52 +27,31 @@ export const useTransfer = () => {
     gasLimit,
   }: TransferOptions) => {
     if (!signer) {
-      ToastHelper.show({
-        type: 'error',
-        autoHide: true,
-        text1: 'Error',
-        text2: 'No signer found',
-      });
-      return;
+      throw new Error('No signer found');
     }
-    try {
-      if (to.id && contactMap[to.id]?.address) {
-        const receiverAddress = contactMap[to.id].address;
-        if (currency.address === CONSTANTS.ZERO_ADDRESS) {
-          const tx = await signer.sendTransaction({
-            to: receiverAddress,
-            value: ethers.utils.parseEther(amount),
-            gasLimit: gasLimit,
-          });
-          await tx.wait();
-          ToastHelper.show({
-            type: 'success',
-            autoHide: true,
-            text1: 'Success',
-            text2: 'Transfer successful',
-          });
-        } else {
-          attachTo(currency.address, signer);
-          const tx = await contract?.transfer(
-            to,
-            ethers.utils.parseUnits(amount),
-          );
-          await tx?.wait();
-          ToastHelper.show({
-            type: 'success',
-            autoHide: true,
-            text1: 'Success',
-            text2: 'Transfer successful',
-          });
-        }
+    if (to.id && contactMap[to.id]?.address) {
+      const receiverAddress = contactMap[to.id].address;
+      if (currency.address === CONSTANTS.ZERO_ADDRESS) {
+        const tx = await signer.sendTransaction({
+          to: receiverAddress,
+          value: ethers.utils.parseEther(amount),
+          gasLimit: gasLimit,
+        });
+        await tx.wait();
+        ToastHelper.show({
+          type: 'success',
+          autoHide: true,
+          text1: 'Success',
+          text2: 'Transfer successful',
+        });
+      } else {
+        attachTo(currency.address, signer);
+        const tx = await contract?.transfer(
+          to,
+          ethers.utils.parseUnits(amount),
+        );
+        await tx?.wait();
       }
-    } catch (error: any) {
-      ToastHelper.show({
-        type: 'error',
-        autoHide: true,
-        text1: 'Error',
-        text2: error.message ?? 'Failed to transfer',
-      });
     }
   };
 
