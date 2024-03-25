@@ -2,6 +2,9 @@ import {PayloadAction, createSlice} from '@reduxjs/toolkit';
 import {REDUX_STORE} from '../config';
 import type {Web3WalletTypes} from '@walletconnect/web3wallet';
 import type {ProposalTypes, Verify, SessionTypes} from '@walletconnect/types';
+import {ScheduledTransaction} from './transactionSlice';
+import {CurrencyDropdownType} from '../components';
+import {Contact} from 'expo-contacts';
 
 type SetSessionProposalModalOptions = {
   isOpen: boolean;
@@ -41,6 +44,28 @@ type ModalSliceData = {
     requestEvent?: Web3WalletTypes.SessionRequest;
     requestSession?: SessionTypes.Struct;
   };
+  createScheduledTransaction: {
+    isOpen: boolean;
+  };
+  sendTokens: {
+    isOpen: boolean;
+    transaction?: {
+      amount: string;
+      currency: CurrencyDropdownType;
+      to: Contact;
+    };
+  };
+  sendTokensScheduled: {
+    isOpen: boolean;
+    scheduledTransaction?: ScheduledTransaction;
+  };
+  addAddressToContactModal: {
+    isOpen: boolean;
+    contact?: Contact;
+  };
+  createContactModal: {
+    isOpen: boolean;
+  };
 };
 
 const initialState: ModalSliceData = {
@@ -50,6 +75,11 @@ const initialState: ModalSliceData = {
   sessionSignTypedData: {isOpen: false},
   sessionSignTransaction: {isOpen: false},
   sessionSendTransaction: {isOpen: false},
+  createScheduledTransaction: {isOpen: false},
+  sendTokens: {isOpen: false},
+  sendTokensScheduled: {isOpen: false},
+  addAddressToContactModal: {isOpen: false},
+  createContactModal: {isOpen: false},
 };
 
 const progressSlice = createSlice({
@@ -86,7 +116,37 @@ const progressSlice = createSlice({
     ) => {
       state.sessionSendTransaction = action.payload;
     },
-    setMnemonicProposalModal: (state, action: PayloadAction<boolean>) => {
+    openCreateScheduledTransactionModal: (
+      state,
+      action: PayloadAction<boolean>,
+    ) => {
+      state.createScheduledTransaction.isOpen = action.payload;
+    },
+    openSendTokensModal: (
+      state,
+      action: PayloadAction<ModalSliceData['sendTokens']>,
+    ) => {
+      state.sendTokens = action.payload;
+    },
+    openSendTokensScheduledModal: (
+      state,
+      action: PayloadAction<ModalSliceData['sendTokensScheduled']>,
+    ) => {
+      state.sendTokensScheduled = action.payload;
+    },
+    openAddAddressToContactModal: (
+      state,
+      action: PayloadAction<ModalSliceData['addAddressToContactModal']>,
+    ) => {
+      state.addAddressToContactModal = action.payload;
+    },
+    openCreateContactModal: (
+      state,
+      action: PayloadAction<ModalSliceData['createContactModal']>,
+    ) => {
+      state.createContactModal = action.payload;
+    },
+    openMnemonicModal: (state, action: PayloadAction<boolean>) => {
       state.mnemonicReveal.isOpen = action.payload;
     },
     closeProposalModal: state => {
@@ -104,9 +164,27 @@ const progressSlice = createSlice({
     closeSendTransactionModal: state => {
       state.sessionSendTransaction = {isOpen: false};
     },
+    closeCreateScheduledTransactionModal: state => {
+      state.createScheduledTransaction = {isOpen: false};
+    },
+    closeSendTokensModal: state => {
+      state.sendTokens = {isOpen: false};
+    },
+    closeSendTokensScheduledModal: state => {
+      state.sendTokensScheduled = {isOpen: false};
+    },
+    closeMnemonicModal: state => {
+      state.mnemonicReveal = {isOpen: false};
+    },
+    closeAddAddressToContactModal: state => {
+      state.addAddressToContactModal = {isOpen: false};
+    },
+    closeCreateContactModal: state => {
+      state.createContactModal = {isOpen: false};
+    },
     clearModalData: state => {
-      state.sessionProposal = initialState.sessionProposal;
-      state.mnemonicReveal = initialState.mnemonicReveal;
+      state = initialState;
+      return state;
     },
   },
 });
@@ -126,12 +204,27 @@ export const selectSignTransactionModal = (state: {
 export const selectSendTransactionModal = (state: {
   [key: string]: ModalSliceData;
 }) => state[REDUX_STORE.MODALS].sessionSendTransaction;
+export const selectCreateScheduledTransactionModal = (state: {
+  [key: string]: ModalSliceData;
+}) => state[REDUX_STORE.MODALS].createScheduledTransaction;
+export const selectSendTokensModal = (state: {[key: string]: ModalSliceData}) =>
+  state[REDUX_STORE.MODALS].sendTokens;
+export const selectSendTokensScheduledModal = (state: {
+  [key: string]: ModalSliceData;
+}) => state[REDUX_STORE.MODALS].sendTokensScheduled;
+export const selectAddAddressToContactModal = (state: {
+  [key: string]: ModalSliceData;
+}) => state[REDUX_STORE.MODALS].addAddressToContactModal;
+export const selectCreateContactModal = (state: {
+  [key: string]: ModalSliceData;
+}) => state[REDUX_STORE.MODALS].createContactModal;
 
 export const {
   openProposalModal,
   closeProposalModal,
   clearModalData,
-  setMnemonicProposalModal,
+  openMnemonicModal,
+  closeMnemonicModal,
   openSignModal,
   closeSignModal,
   openSignTypedDataModal,
@@ -140,6 +233,16 @@ export const {
   closeSignTransactionModal,
   openSendTransactionModal,
   closeSendTransactionModal,
+  openCreateScheduledTransactionModal,
+  closeCreateScheduledTransactionModal,
+  openSendTokensModal,
+  closeSendTokensModal,
+  openSendTokensScheduledModal,
+  closeSendTokensScheduledModal,
+  openAddAddressToContactModal,
+  closeAddAddressToContactModal,
+  openCreateContactModal,
+  closeCreateContactModal,
 } = progressSlice.actions;
 
 export default progressSlice.reducer;

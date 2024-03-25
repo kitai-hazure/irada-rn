@@ -4,12 +4,7 @@ import {DrawerNavigationProp} from '@react-navigation/drawer';
 
 export type DrawerNavigatorRoutes = {
   Home: undefined;
-  SendMoney: {
-    chain: string;
-    currency: string;
-    amount: string;
-    to: string;
-  };
+  SendMoney: undefined;
   Contacts: undefined;
   SavedContacts: undefined;
   Settings: undefined;
@@ -17,6 +12,7 @@ export type DrawerNavigatorRoutes = {
   TransactionHistory: undefined;
   TokenBalances: undefined;
   Swap: undefined;
+  ScheduleTransactions: undefined;
 };
 
 export type AppNavigatorRoutes = {
@@ -26,6 +22,7 @@ export type AppNavigatorRoutes = {
   ImportWallet: undefined;
   Onboarding: undefined;
   BiometricLogin: undefined;
+  EnableContacts: undefined;
 };
 
 export interface DrawerNavigationProps<

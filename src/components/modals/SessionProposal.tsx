@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   Linking,
@@ -13,101 +13,50 @@ import {SvgUri} from 'react-native-svg';
 import {ModalBottomButtons, WarningNote, ModalAddress} from '../walletconnect';
 import {useSelector, useDispatch} from 'react-redux';
 import {closeProposalModal, selectProposalModal} from '../../store';
+import {buildApprovedNamespaces} from '@walletconnect/utils';
+import type {SessionTypes} from '@walletconnect/types';
+import {ToastHelper} from '../../helpers';
 
 export const SessionProposal = () => {
   const themedStyles = useThemedStyles(styles);
   const [imageLoadError, setImageLoadError] = useState(false);
   const {params, verifyContext, id} = useSelector(selectProposalModal);
   const dispatch = useDispatch();
+  const [namespaces, setNamespaces] = useState<SessionTypes.Namespaces>();
 
-  const {accept, reject} = useWallet();
+  const {accept, reject, getSupportedNamespaces} = useWallet();
 
   const handleApproveSession = async () => {
-    if (id && params) {
-      await accept(id, params);
-      dispatch(closeProposalModal());
+    try {
+      if (id && namespaces) {
+        await accept(id, namespaces);
+        dispatch(closeProposalModal());
+      }
+    } catch (error: any) {
+      ToastHelper.show({
+        type: 'error',
+        autoHide: true,
+        text1: 'Error',
+        text2: error.message ?? 'Failed to approve session',
+      });
     }
   };
 
   const handleRejectSession = async () => {
-    if (id) {
-      await reject(id);
-      dispatch(closeProposalModal());
+    try {
+      if (id) {
+        await reject(id);
+        dispatch(closeProposalModal());
+      }
+    } catch (error: any) {
+      ToastHelper.show({
+        type: 'error',
+        autoHide: true,
+        text1: 'Error',
+        text2: error.message ?? 'Failed to reject session',
+      });
     }
   };
-
-  // const data = {
-  //   id: 1709718140185332,
-  //   params: {
-  //     id: 1709718140185332,
-  //     pairingTopic:
-  //       'b6727ac188d8eafc7e221d179915175ee3ce094006d361e0318b6f8f0d10f953',
-  //     expiryTimestamp: 1709718441,
-  //     requiredNamespaces: {
-  //       eip155: {
-  //         chains: ['eip155:1'],
-  //         methods: ['eth_sendTransaction', 'personal_sign'],
-  //         events: ['chainChanged', 'accountsChanged'],
-  //         rpcMap: {
-  //           '1': 'https://mainnet.infura.io/v3/1afc24a3e4c443a0990d6e5efc2ecde5',
-  //         },
-  //       },
-  //     },
-  //     optionalNamespaces: {
-  //       eip155: {
-  //         chains: [
-  //           'eip155:1',
-  //           'eip155:137',
-  //           'eip155:56',
-  //           'eip155:42161',
-  //           'eip155:1101',
-  //         ],
-  //         methods: [
-  //           'eth_sendTransaction',
-  //           'personal_sign',
-  //           'eth_signTransaction',
-  //           'eth_sign',
-  //           'eth_signTypedData',
-  //           'eth_signTypedData_v4',
-  //         ],
-  //         events: ['chainChanged', 'accountsChanged'],
-  //         rpcMap: {
-  //           '1': 'https://mainnet.infura.io/v3/1afc24a3e4c443a0990d6e5efc2ecde5',
-  //           '56': 'https://bsc-dataseed.binance.org/',
-  //           '137':
-  //             'https://polygon-mainnet.infura.io/v3/1afc24a3e4c443a0990d6e5efc2ecde5',
-  //           '1101': 'https://rpc.polygon-zkevm.gateway.fm',
-  //           '42161':
-  //             'https://arbitrum-mainnet.infura.io/v3/1afc24a3e4c443a0990d6e5efc2ecde5',
-  //         },
-  //       },
-  //     },
-  //     relays: [{protocol: 'irn'}],
-  //     proposer: {
-  //       publicKey:
-  //         '67223205f1d66e43de9ea2a01a1b6995dd9ab75925af644ab289d8acccf0365b',
-  //       metadata: {
-  //         name: 'Push (EPNS)  App',
-  //         description: 'The Communication Protocol of Web3',
-  //         url: 'https://app.push.org',
-  //         icons: [
-  //           '/static/media/PushBlocknativeLogo.04b115a4c0b42bef077b2bc69647b1e0.svg',
-  //           '/static/media/PushBlocknativeLogo.04b115a4c0b42bef077b2bc69647b1e0.svg',
-  //         ],
-  //       },
-  //     },
-  //   },
-  //   verifyContext: {
-  //     verified: {
-  //       verifyUrl: 'https://verify.walletconnect.com',
-  //       validation: 'VALID',
-  //       origin: 'https://app.push.org',
-  //     },
-  //   },
-  // };
-  // const params = data.params;
-  // const id = data.id;
-  // const verifyContext = data.verifyContext;
 
   const imageUri = params?.proposer.metadata.icons[0];
 
@@ -116,6 +65,24 @@ export const SessionProposal = () => {
       Linking.openURL(url);
     }
   };
+
+  useEffect(() => {
+    if (params) {
+      try {
+        const supportedNamespaces = getSupportedNamespaces();
+        const ns = buildApprovedNamespaces({
+          proposal: params,
+          supportedNamespaces,
+        });
+        setNamespaces(ns);
+      } catch (error) {
+        console.error(
+          'Error building approved namespaces, possibly chain not supported.',
+          error,
+        );
+      }
+    }
+  }, [getSupportedNamespaces, params]);
 
   return (
     <View style={themedStyles.container}>

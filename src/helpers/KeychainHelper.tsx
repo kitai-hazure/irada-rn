@@ -4,6 +4,7 @@ export type KeychainPasswordOptions = {
   mnemonic: string;
   privateKey: string;
   accountCount: number;
+  chainId: string;
 };
 
 export const KeychainHelper = {

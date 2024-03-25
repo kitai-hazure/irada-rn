@@ -8,14 +8,19 @@ import {
 } from '../config';
 import {getSdkError} from '@walletconnect/utils';
 import {useSelector} from 'react-redux';
-import {selectCurrentAddress, selectCurrentPrivateKey} from '../store';
-import {buildApprovedNamespaces} from '@walletconnect/utils';
-import type {ProposalTypes, SignClientTypes} from '@walletconnect/types';
-import {Wallet, providers, utils} from 'ethers';
+import {
+  selectCurrentAddress,
+  selectCurrentChain,
+  selectCurrentPrivateKey,
+} from '../store';
+import type {SignClientTypes, SessionTypes} from '@walletconnect/types';
+import {Wallet, utils} from 'ethers';
 import {
   formatJsonRpcError,
   formatJsonRpcResult,
 } from '@walletconnect/jsonrpc-utils';
+import {useMemo} from 'react';
+import {AlchemyHelper} from '../helpers';
 
 export function convertHexToUtf8(value: string) {
   if (utils.isHexString(value)) {
@@ -38,7 +43,6 @@ export function getSignTypedDataParamsData(params: string[]) {
 }
 
 type ChangeAccountOptions = {
-  topic: string;
   address: string;
   chainId: string;
 };
@@ -46,6 +50,13 @@ type ChangeAccountOptions = {
 export const useWallet = () => {
   const currentAddress = useSelector(selectCurrentAddress);
   const currentPrivateKey = useSelector(selectCurrentPrivateKey);
+  const currentChain = useSelector(selectCurrentChain);
+
+  const provider = useMemo(() => {
+    return AlchemyHelper.getProvider();
+    // Reload the provider when the current chain changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentChain]);
 
   const pair = async (uri: string) => {
     await web3wallet.pair({uri});
@@ -58,39 +69,39 @@ export const useWallet = () => {
     });
   };
 
-  const changeAccount = async ({
-    topic,
-    address,
-    chainId,
-  }: ChangeAccountOptions) => {
-    await web3wallet.emitSessionEvent({
-      topic,
-      event: {
-        name: 'accountsChanged',
-        data: [address],
-      },
-      chainId: `eip155:${chainId}`,
-    });
-  };
-
-  const changeChain = async (topic: string, chainId: string) => {
-    await web3wallet.emitSessionEvent({
-      topic,
-      event: {
-        name: 'chainChanged',
-        data: 1,
-      },
-      chainId: `eip155:${chainId}`,
-    });
-  };
-
-  const accept = async (id: number, params: ProposalTypes.Struct) => {
-    if (currentAddress) {
-      const supportedNamespaces = getSupportedNamespaces();
-      const namespaces = buildApprovedNamespaces({
-        proposal: params,
-        supportedNamespaces,
+  const changeAccount = async ({address, chainId}: ChangeAccountOptions) => {
+    const sessions = web3wallet.getActiveSessions();
+    Object.values(sessions).forEach(async session => {
+      await web3wallet.emitSessionEvent({
+        topic: session.topic,
+        event: {
+          name: 'accountsChanged',
+          data: [address],
+        },
+        chainId: `eip155:${chainId}`,
       });
+    });
+  };
+
+  const changeChain = async (chainId: string) => {
+    const sessions = web3wallet.getActiveSessions();
+    Object.values(sessions).forEach(async session => {
+      await web3wallet.emitSessionEvent({
+        topic: session.topic,
+        event: {
+          name: 'chainChanged',
+          data: 1,
+        },
+        chainId: `eip155:${chainId}`,
+      });
+    });
+  };
+
+  const accept = async (
+    id: number,
+    namespaces: Record<string, SessionTypes.BaseNamespace>,
+  ) => {
+    if (currentAddress) {
       await web3wallet.approveSession({id, namespaces});
     }
   };
@@ -122,6 +133,9 @@ export const useWallet = () => {
     }
     const {params, id} = requestEvent;
     const {chainId, request} = params;
+    if (chainId !== currentChain.chainId) {
+      throw new Error(getSdkError('UNSUPPORTED_CHAINS').message);
+    }
     const wallet = new Wallet(currentPrivateKey);
 
     switch (request.method) {
@@ -145,7 +159,6 @@ export const useWallet = () => {
         return formatJsonRpcResult(id, signedData);
 
       case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
-        const provider = new providers.JsonRpcProvider(); // TODO: add a json rpc url here
         const sendTransaction = request.params[0];
         const connectedWallet = wallet.connect(provider);
         const {hash} = await connectedWallet.sendTransaction(sendTransaction);
@@ -177,5 +190,6 @@ export const useWallet = () => {
     rejectEIP155Request,
     changeAccount,
     changeChain,
+    getSupportedNamespaces,
   };
 };

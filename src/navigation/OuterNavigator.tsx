@@ -7,10 +7,11 @@ import {
   Login,
   Onboarding,
   BiometricLogin,
+  EnableContacts,
 } from '../screens';
-import DrawerNavigator from './DrawerNavigator';
 import {useSelector} from 'react-redux';
 import {selectHasWalletCreated, selectIsFirstLogin} from '../store';
+import {DrawerNavigator} from './DrawerNavigator';
 
 const Stack = createStackNavigator<AppNavigatorRoutes>();
 
@@ -37,6 +38,7 @@ export const OuterNavigator = () => {
       <Stack.Screen name="BiometricLogin" component={BiometricLogin} />
       <Stack.Screen name="CreateWallet" component={CreateWallet} />
       <Stack.Screen name="ImportWallet" component={ImportWallet} />
+      <Stack.Screen name="EnableContacts" component={EnableContacts} />
       <Stack.Screen name="Main" component={DrawerNavigator} />
     </Stack.Navigator>
   );

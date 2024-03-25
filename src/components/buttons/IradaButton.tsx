@@ -1,9 +1,12 @@
 import {
+  ActivityIndicator,
   Pressable,
   PressableProps,
   StyleProp,
   StyleSheet,
   Text,
+  TextStyle,
+  View,
   ViewStyle,
 } from 'react-native';
 import React from 'react';
@@ -14,16 +17,20 @@ type IradaButtonProps = {
   color: keyof Theme;
   textColor?: keyof Theme;
   style?: StyleProp<ViewStyle>;
-  textStyle?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
   children?: React.ReactNode;
+  loading?: boolean;
+  loaderColor?: keyof Theme;
 } & PressableProps;
 
 export const IradaButton = ({
   color,
-  textColor,
+  textColor = 'white',
   textStyle,
   style,
   children,
+  loading = false,
+  loaderColor = 'white',
   ...rest
 }: IradaButtonProps) => {
   const themedStyles = useThemedStyles(styles);
@@ -36,17 +43,23 @@ export const IradaButton = ({
         themedStyles.container,
         style,
       ]}>
-      {typeof children === 'string' ? (
-        <Text
-          style={[
-            themedStyles.text,
-            {color: themedStyles.theme[textColor || 'white']},
-            textStyle,
-          ]}>
-          {children}
-        </Text>
+      {loading ? (
+        <ActivityIndicator color={themedStyles.theme[loaderColor]} />
       ) : (
-        children
+        <>
+          {typeof children === 'string' ? (
+            <Text
+              style={[
+                themedStyles.text,
+                {color: themedStyles.theme[textColor]},
+                textStyle,
+              ]}>
+              {children}
+            </Text>
+          ) : (
+            <View style={themedStyles.childrenContainer}>{children}</View>
+          )}
+        </>
       )}
     </Pressable>
   );
@@ -57,13 +70,15 @@ const styles = (theme: Theme) =>
     container: {
       padding: 16,
       borderRadius: 16,
-      alignItems: 'center',
-      justifyContent: 'center',
     },
     text: {
       color: theme.text,
       fontSize: 14,
-      alignSelf: 'center',
+      textAlign: 'center',
+    },
+    childrenContainer: {
+      alignItems: 'center',
       justifyContent: 'center',
+      flex: 1,
     },
   });

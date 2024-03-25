@@ -3,41 +3,34 @@ import React, {useState} from 'react';
 import {Theme} from '../../config';
 import {useThemedStyles} from '../../hooks';
 import {SelectCountry} from 'react-native-element-dropdown';
-import {SupportedChains} from '../../../types/chain';
-
-const chainDropdownData: {
-  label: SupportedChains;
-  image: {uri: string};
-}[] = [
-  {
-    image: {
-      uri: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
-    },
-    label: 'Ethereum',
-  },
-  {
-    label: 'Polygon',
-    image: {
-      uri: 'https://cryptologos.cc/logos/polygon-matic-logo.png',
-    },
-  },
-];
+import {CHAINS, CHAIN_LIST, Chain} from '../../config/chain';
+import {useSelector} from 'react-redux';
+import {selectCurrentChain} from '../../store';
 
 type ChainDropdownProps = {
-  onChange: (chain: SupportedChains) => void;
+  onChange: (chain: Chain) => void;
 };
 
 export const ChainDropdown = ({onChange}: ChainDropdownProps) => {
   const themedStyles = useThemedStyles(styles);
-  const [value, setValue] = useState<SupportedChains>('Ethereum');
+  const currentChain = useSelector(selectCurrentChain);
+  const [value, setValue] = useState<Chain>(currentChain);
 
   return (
     <SelectCountry
-      data={chainDropdownData}
-      labelField="label"
-      valueField="label"
+      data={CHAIN_LIST.map(chain => ({
+        chainId: chain.chainId,
+        name: chain.name,
+        image: {uri: chain.image},
+      }))}
+      labelField="name"
+      valueField="name"
       imageField="image"
-      value={value}
+      value={{
+        name: value.name,
+        image: {uri: CHAINS[value.chainId].image},
+        chainId: value.chainId,
+      }}
       containerStyle={themedStyles.containerStyle}
       imageStyle={themedStyles.image}
       itemContainerStyle={themedStyles.itemContainer}
@@ -46,8 +39,8 @@ export const ChainDropdown = ({onChange}: ChainDropdownProps) => {
       placeholder="Select chain"
       placeholderStyle={themedStyles.selectedTextStyle}
       onChange={item => {
-        setValue(item.label);
-        onChange(item.label);
+        setValue(CHAINS[item.chainId]);
+        onChange(CHAINS[item.chainId]);
       }}
       activeColor={themedStyles.activeColor.color}
     />

@@ -11,3 +11,5 @@ export * from './Home';
 export * from './Scan';
 export * from './TransactionHistory';
 export * from './TokenBalances';
+export * from './EnableContacts';
+export * from './ScheduleTransactions';

@@ -4,4 +4,5 @@ export const REDUX_STORE = {
   ACCOUNT: 'account',
   PROGRESS: 'progress',
   MODALS: 'modals',
+  TRANSACTION: 'transaction',
 };

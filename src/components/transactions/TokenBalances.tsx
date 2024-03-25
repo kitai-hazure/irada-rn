@@ -10,8 +10,8 @@ import {
 import React from 'react';
 import {Theme} from '../../config';
 import {useSelector} from 'react-redux';
-import {selectCurrentAddress} from '../../store';
-import {useTokenBalancesQuery} from '../../hooks/useTokenBalances';
+import {selectCurrentAddress, selectCurrentChain} from '../../store';
+import {useTokenBalancesQuery} from '../../hooks/useTokenBalancesQuery';
 import {Empty, Errored, Loader} from '../misc';
 import {useThemedStyles} from '../../hooks';
 
@@ -19,6 +19,7 @@ export const TokenBalances = () => {
   const currentAddress = useSelector(selectCurrentAddress);
   const {data, isLoading, isError} = useTokenBalancesQuery(currentAddress);
   const themedStyles = useThemedStyles(styles);
+  const currentChain = useSelector(selectCurrentChain);
 
   if (isError) {
     return <Errored />;
@@ -28,35 +29,29 @@ export const TokenBalances = () => {
     return <Empty message="No tokens found" />;
   }
 
-  console.log('data', data);
   const handleOpenContract = (contract: string) => {
-    Linking.openURL(`https://etherscan.io/address/${contract}`); // TODO: change to correct rpc
+    Linking.openURL(`${currentChain.blockExplorerUrl}address/${contract}`);
   };
 
   return (
     <View>
       <FlatList
         data={data}
-        keyExtractor={item => item.address}
+        keyExtractor={item => item.contractAddress}
         renderItem={({item}) => (
           <Pressable
             style={themedStyles.container}
-            onPress={() => handleOpenContract(item.address)}>
-            {item.metadata.logo ? (
-              <Image
-                source={{uri: item.metadata.logo}}
-                style={themedStyles.logo}
-              />
+            onPress={() => handleOpenContract(item.contractAddress)}>
+            {item.logo ? (
+              <Image source={{uri: item.logo}} style={themedStyles.logo} />
             ) : (
               <View style={themedStyles.emptyLogo}>
-                <Text style={themedStyles.text}>
-                  {item.metadata.symbol?.charAt(0)}
-                </Text>
+                <Text style={themedStyles.text}>{item.symbol?.charAt(0)}</Text>
               </View>
             )}
-            <Text style={themedStyles.name}>{item.metadata.name}</Text>
+            <Text style={themedStyles.name}>{item.name}</Text>
             <Text style={themedStyles.balance}>
-              {item.balance} {item.metadata.symbol}
+              {item.balance} {item.symbol}
             </Text>
           </Pressable>
         )}

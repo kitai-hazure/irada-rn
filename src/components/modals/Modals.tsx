@@ -1,6 +1,5 @@
-import React, {useEffect} from 'react';
-import {BottomSheet} from './BottomSheet';
-import SessionProposal from './SessionProposal';
+import React from 'react';
+import {StyleSheet, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   closeProposalModal,
@@ -8,18 +7,33 @@ import {
   closeSignTypedDataModal,
   closeSignTransactionModal,
   selectMnemonic,
-  selectMnemonicModal,
-  selectProposalModal,
-  selectSignModal,
-  setMnemonicProposalModal,
-  selectSignTypedDataModal,
-  selectSignTransactionModal,
+  closeMnemonicModal,
   closeSendTransactionModal,
+  closeCreateScheduledTransactionModal,
+  selectProposalModal,
+  selectSignTypedDataModal,
+  selectMnemonicModal,
+  selectSignModal,
   selectSendTransactionModal,
+  selectSignTransactionModal,
+  selectCreateScheduledTransactionModal,
+  selectSendTokensModal,
+  selectSendTokensScheduledModal,
+  closeSendTokensModal,
+  closeSendTokensScheduledModal,
+  closeAddAddressToContactModal,
+  closeCreateContactModal,
+  selectAddAddressToContactModal,
+  selectCreateContactModal,
 } from '../../store';
 import {MnemonicInput} from '../inputs';
+import {BottomSheet} from './BottomSheet';
 import {SessionSign} from './SessionSign';
-import {StyleSheet, View} from 'react-native';
+import SessionProposal from './SessionProposal';
+import {SendTokens} from '../transactions';
+import {Modal} from './Modal';
+import {AddContactModal} from './AddContactModal';
+import {CreateContactModal} from './CreateContactModal';
 
 export const Modals = () => {
   const {isOpen: isOpenProposalModal} = useSelector(selectProposalModal);
@@ -34,26 +48,34 @@ export const Modals = () => {
   );
   const {isOpen: isOpenMnemonicModal} = useSelector(selectMnemonicModal);
   const {isOpen: isOpenSignModal} = useSelector(selectSignModal);
+  const {isOpen: isOpenCreateScheduledTransactionModal} = useSelector(
+    selectCreateScheduledTransactionModal,
+  );
+  const {isOpen: isOpenSendTokensModal} = useSelector(selectSendTokensModal);
+  const {isOpen: isOpenSendTokensScheduledModal} = useSelector(
+    selectSendTokensScheduledModal,
+  );
+  const {isOpen: isOpenAddAddrToCon} = useSelector(
+    selectAddAddressToContactModal,
+  );
+  const {isOpen: isOpenCreateContact} = useSelector(selectCreateContactModal);
+
   const mnemonic = useSelector(selectMnemonic);
 
   const dispatch = useDispatch();
 
   const closeSPM = () => dispatch(closeProposalModal());
-  const closeMnemonic = () => dispatch(setMnemonicProposalModal(false));
+  const closeMnemonic = () => dispatch(closeMnemonicModal());
   const closeSRSign = () => dispatch(closeSignModal());
   const closeSRSignTypedData = () => dispatch(closeSignTypedDataModal());
   const closeSignTransaction = () => dispatch(closeSignTransactionModal());
   const closeSendTransaction = () => dispatch(closeSendTransactionModal());
-
-  useEffect(() => {
-    // dispatch(
-    //   openSignTransactionModal({
-    //     isOpen: true,
-    //     requestEvent: undefined as any,
-    //     requestSession: undefined as any,
-    //   }),
-    // );
-  }, [dispatch]);
+  const closeCST = () => dispatch(closeCreateScheduledTransactionModal());
+  const closeSendTokens = () => dispatch(closeSendTokensModal());
+  const closeSendTokensScheduled = () =>
+    dispatch(closeSendTokensScheduledModal());
+  const closeAddAddrToCon = () => dispatch(closeAddAddressToContactModal());
+  const closeCreateContact = () => dispatch(closeCreateContactModal());
 
   if (!mnemonic) {
     return null;
@@ -74,7 +96,7 @@ export const Modals = () => {
         isOpen={isOpenMnemonicModal}
         closeSheet={closeMnemonic}>
         <View style={styles.margins}>
-          <MnemonicInput values={mnemonic?.split(' ')} />
+          <MnemonicInput values={mnemonic.split(' ')} />
         </View>
       </BottomSheet>
       {/* Session Request Sign Modal */}
@@ -105,6 +127,36 @@ export const Modals = () => {
         closeSheet={closeSendTransaction}>
         <SessionSign type="SEND_TRANSACTION" />
       </BottomSheet>
+      {/* Create Scheduled Transaction */}
+      <BottomSheet
+        height={1000}
+        isOpen={isOpenCreateScheduledTransactionModal}
+        closeSheet={closeCST}>
+        <SendTokens type="CREATE_TRANSACTION" />
+      </BottomSheet>
+      {/* Send Tokens */}
+      <BottomSheet
+        height={800}
+        minHeight={400}
+        isOpen={isOpenSendTokensModal}
+        closeSheet={closeSendTokens}>
+        <SendTokens type="SEND_WITH_PARAMS" />
+      </BottomSheet>
+      {/* Send Tokens Scheduled */}
+      <BottomSheet
+        height={800}
+        isOpen={isOpenSendTokensScheduledModal}
+        closeSheet={closeSendTokensScheduled}>
+        <SendTokens type="SCHEDULED_TRANSACTION" />
+      </BottomSheet>
+      {/* Add Address To Contact */}
+      <Modal isOpen={isOpenAddAddrToCon} closeModal={closeAddAddrToCon}>
+        <AddContactModal />
+      </Modal>
+      {/* Create New Contact */}
+      <Modal isOpen={isOpenCreateContact} closeModal={closeCreateContact}>
+        <CreateContactModal />
+      </Modal>
     </>
   );
 };

@@ -24,6 +24,7 @@ import {
   TransactionData,
 } from '../walletconnect';
 import {ScrollView} from 'react-native-gesture-handler';
+import {ToastHelper} from '../../helpers';
 
 type SessionSignProps = {
   type: 'SIGN' | 'SIGN_TYPED_DATA' | 'SIGN_TRANSACTION' | 'SEND_TRANSACTION';
@@ -71,8 +72,7 @@ export const SessionSign = ({type}: SessionSignProps) => {
   }
 
   const {topic, params} = requestEvent;
-  const {request, chainId} = params;
-  console.log('chain', chainId);
+  const {request} = params;
 
   const isSignDataRequest = type === 'SIGN' || type === 'SIGN_TYPED_DATA';
 
@@ -84,35 +84,45 @@ export const SessionSign = ({type}: SessionSignProps) => {
   const transaction = isSignDataRequest ? undefined : request.params[0];
 
   const handleAcceptSignRequest = async () => {
-    const response = await approveEIP155Request(requestEvent);
-    if (!response) {
-      return;
-    }
     try {
+      const response = await approveEIP155Request(requestEvent);
+      if (!response) {
+        return;
+      }
       await web3wallet.respondSessionRequest({
         topic,
         response,
       });
-    } catch (error) {
+    } catch (error: any) {
+      ToastHelper.show({
+        type: 'error',
+        autoHide: true,
+        text1: 'Error',
+        text2: error.message ?? 'Failed to sign transaction',
+      });
     } finally {
       handleClose();
     }
   };
 
   const handleRejectSignRequest = async () => {
-    const response = rejectEIP155Request(requestEvent);
     try {
+      const response = rejectEIP155Request(requestEvent);
       await web3wallet.respondSessionRequest({
         topic,
         response,
       });
-    } catch (e) {
+    } catch (error: any) {
+      ToastHelper.show({
+        type: 'error',
+        autoHide: true,
+        text1: 'Error',
+        text2: error.message ?? 'Failed to reject transaction',
+      });
     } finally {
       handleClose();
     }
   };
-
-  console.log('message', type);
 
   return (
     <View style={themedStyles.container}>

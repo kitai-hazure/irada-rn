@@ -9,27 +9,19 @@ import {
   openSignTypedDataModal,
   openSendTransactionModal,
 } from '../store';
+import {ToastHelper} from '../helpers';
 
 export const useWalletConnectEvents = (initialized: boolean) => {
   const dispatch = useDispatch();
 
   const onSessionProposal = useCallback(
     ({id, params, verifyContext}: Web3WalletTypes.SessionProposal) => {
-      console.log(
-        'onSessionProposal',
-        JSON.stringify({
-          id,
-          params,
-          verifyContext,
-        }),
-      );
       dispatch(openProposalModal({isOpen: true, id, params, verifyContext}));
     },
     [dispatch],
   );
 
   const onAuthRequest = useCallback((request: Web3WalletTypes.AuthRequest) => {
-    // ModalStore.open('AuthRequestModal', {request});
     console.log('AuthRequestModal', request);
   }, []);
 
@@ -78,34 +70,27 @@ export const useWalletConnectEvents = (initialized: boolean) => {
           break;
 
         default:
-          console.log('SessionUnsuportedMethodModal', request.method);
-          // return ModalStore.open('SessionUnsuportedMethodModal', {
-          //   requestEvent,
-          //   requestSession,
-          // });
+          ToastHelper.show({
+            type: 'error',
+            autoHide: true,
+            text1: 'Error',
+            text2: 'Unsupported method',
+          });
           break;
       }
     },
     [dispatch],
   );
 
-  /******************************************************************************
-   * Set up WalletConnect event listeners
-   *****************************************************************************/
   useEffect(() => {
     if (initialized && web3wallet) {
-      // sign
       web3wallet.on('session_proposal', onSessionProposal);
       web3wallet.on('session_request', onSessionRequest);
-      // auth
       web3wallet.on('auth_request', onAuthRequest);
-      // web3wallet.on('session_delete', data => {
-      //   SettingsStore.setSessions(
-      //     Object.values(web3wallet.getActiveSessions()),
-      //   );
-      // });
-      // load sessions on init
-      // SettingsStore.setSessions(Object.values(web3wallet.getActiveSessions()));
     }
+
+    return () => {
+      web3wallet?.events.removeAllListeners();
+    };
   }, [initialized, onAuthRequest, onSessionProposal, onSessionRequest]);
 };

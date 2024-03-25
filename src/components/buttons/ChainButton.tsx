@@ -1,5 +1,4 @@
 import {
-  ActivityIndicator,
   Image,
   Pressable,
   ScrollView,
@@ -7,10 +6,10 @@ import {
   Text,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
-import {QUERY, Theme} from '../../config';
-import {useThemedStyles} from '../../hooks';
-import {useDispatch, useSelector} from 'react-redux';
+import React from 'react';
+import {Theme} from '../../config';
+import {useChain, useThemedStyles} from '../../hooks';
+import {useSelector} from 'react-redux';
 import Animated, {
   FadeInDown,
   useAnimatedStyle,
@@ -18,21 +17,41 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import {FlatList} from 'react-native-gesture-handler';
-import {useQueryClient} from '@tanstack/react-query';
 import {selectChains, selectCurrentChain} from '../../store';
+import {Chain} from '../../config/chain';
+import {ToastHelper} from '../../helpers';
+
+const ChainItem = ({chain}: {chain: Chain}) => {
+  const themedStyles = useThemedStyles(styles);
+  return (
+    <View style={themedStyles.item}>
+      <Image source={{uri: chain.image}} style={themedStyles.chainImage} />
+      <Text style={themedStyles.name}>{chain.name}</Text>
+    </View>
+  );
+};
 
 export const ChainButton = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const themedStyles = useThemedStyles(styles);
-  const dispatch = useDispatch();
   const chains = useSelector(selectChains);
   const currentChain = useSelector(selectCurrentChain);
-
-  const queryClient = useQueryClient();
+  const {changeChain} = useChain();
 
   const opacityValue = useSharedValue(0);
 
-  const handleChangeCurrentChain = async (chainId: string) => {};
+  const handleChangeCurrentChain = async (chainId: string) => {
+    try {
+      handleToggleModal(false);
+      await changeChain(chainId);
+    } catch {
+      ToastHelper.show({
+        type: 'error',
+        autoHide: true,
+        text1: 'Error',
+        text2: 'Failed to switch chain',
+      });
+    }
+  };
 
   const handleToggleModal = (state?: boolean) => {
     let nextValue = opacityValue.value === 0 ? 1 : 0;
@@ -42,12 +61,6 @@ export const ChainButton = () => {
     opacityValue.value = withSpring(nextValue, {
       duration: 500,
     });
-  };
-
-  const handleInvalidateQueries = async () => {
-    queryClient.invalidateQueries({queryKey: [QUERY.TRANSACTIONS_TO]});
-    queryClient.invalidateQueries({queryKey: [QUERY.TRANSACTIONS_FROM]});
-    queryClient.invalidateQueries({queryKey: [QUERY.TOKEN_HOLDINGS]});
   };
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -61,25 +74,24 @@ export const ChainButton = () => {
       <Animated.View
         entering={FadeInDown.springify().damping(15)}
         style={[themedStyles.dropdown, animatedStyle, {opacity: opacityValue}]}>
-        <ScrollView horizontal={true}>
+        <ScrollView
+          horizontal={true}
+          nestedScrollEnabled={true}
+          contentContainerStyle={themedStyles.flexGrow}
+          showsHorizontalScrollIndicator={false}>
           <FlatList
             scrollEnabled={true}
             data={chains}
             nestedScrollEnabled={true}
-            keyExtractor={item => item.address}
-            renderItem={({item, index}) => {
-              if (item.chainId === currentChain.chainId) {
+            keyExtractor={item => item.chainId}
+            renderItem={({item}) => {
+              if (item.chainId === currentChain?.chainId) {
                 return null;
               }
               return (
                 <Pressable
-                  style={themedStyles.item}
                   onPress={() => handleChangeCurrentChain(item.chainId)}>
-                  <Image
-                    source={{uri: item.image}}
-                    style={themedStyles.blockie}
-                  />
-                  <Text style={themedStyles.address}>{item.name}</Text>
+                  <ChainItem chain={item} />
                 </Pressable>
               );
             }}
@@ -90,26 +102,7 @@ export const ChainButton = () => {
       <Pressable
         onPress={() => handleToggleModal()}
         style={themedStyles.button}>
-        {currentChain && (
-          <>
-            {isLoading ? (
-              <View style={themedStyles.centeredItem}>
-                <ActivityIndicator
-                  size={'small'}
-                  color={themedStyles.theme.purple}
-                />
-              </View>
-            ) : (
-              <View style={themedStyles.item}>
-                <Image
-                  source={{uri: currentChain.image}}
-                  style={themedStyles.blockie}
-                />
-                <Text style={themedStyles.address}>{currentChain.name}</Text>
-              </View>
-            )}
-          </>
-        )}
+        {currentChain && <ChainItem chain={currentChain} />}
       </Pressable>
     </View>
   );
@@ -126,7 +119,7 @@ const styles = (theme: Theme) =>
       padding: 16,
       paddingVertical: 8,
     },
-    address: {
+    name: {
       fontSize: 14,
       color: theme.text,
     },
@@ -141,7 +134,7 @@ const styles = (theme: Theme) =>
       paddingVertical: 8,
       justifyContent: 'center',
     },
-    blockie: {
+    chainImage: {
       width: 24,
       height: 24,
       borderRadius: 12,
@@ -163,14 +156,6 @@ const styles = (theme: Theme) =>
       maxHeight: 200,
       overflow: 'scroll',
     },
-    addAccountButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingVertical: 8,
-      gap: 8,
-      width: '100%',
-    },
     border: {
       borderTopColor: theme.lightText,
       borderTopWidth: StyleSheet.hairlineWidth,
@@ -180,5 +165,8 @@ const styles = (theme: Theme) =>
     },
     alignCenter: {
       alignSelf: 'center',
+    },
+    flexGrow: {
+      flexGrow: 1,
     },
   });

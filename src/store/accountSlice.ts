@@ -6,7 +6,7 @@ import {Chain, CHAIN_LIST, CHAINS} from '../config/chain';
 type AccountSliceData = {
   mnemonic: string | undefined;
   currentPrivateKey: string | undefined;
-  currentChainId: string | undefined;
+  currentChainId: string;
   currentAccountIndex: number;
   accounts: Array<{privateKey: string; address: string}>;
   chains: Array<Chain>;
@@ -15,7 +15,7 @@ type AccountSliceData = {
 const initialState: AccountSliceData = {
   mnemonic: undefined,
   currentPrivateKey: undefined,
-  currentChainId: undefined,
+  currentChainId: CHAIN_LIST[0].chainId,
   currentAccountIndex: 0,
   accounts: [],
   chains: CHAIN_LIST,
@@ -82,7 +82,7 @@ export const selectCurrentChain = (state: {
   [key: string]: AccountSliceData;
 }) => {
   const currentChainId = state[REDUX_STORE.ACCOUNT].currentChainId;
-  return currentChainId ? CHAINS[currentChainId] : undefined;
+  return CHAINS[currentChainId];
 };
 
 export const {
@@ -92,6 +92,7 @@ export const {
   addAccount,
   setCurrentAccountIndex,
   clearAccountData,
+  setCurrentChainId,
 } = accountSlice.actions;
 
 export default accountSlice.reducer;

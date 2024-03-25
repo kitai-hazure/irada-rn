@@ -4,9 +4,11 @@ import {useThemedStyles, useTransactionsFromQuery} from '../../hooks';
 import {Theme} from '../../config';
 import {TransactionItem} from './TransactionItem';
 import {Empty, Errored, Loader} from '../misc';
+import {useSelector} from 'react-redux';
+import {selectCurrentAddress} from '../../store';
 
 export const TransactionsFromList = () => {
-  const currentAddress = '0xACEe0D180d0118FD4F3027Ab801cc862520570d1';
+  const currentAddress = useSelector(selectCurrentAddress);
   const {
     data: transactionsFrom,
     isLoading: isLoadingTransactionsFrom,

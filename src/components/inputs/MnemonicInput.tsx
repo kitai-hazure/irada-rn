@@ -9,6 +9,7 @@ import {
 import React from 'react';
 import {Theme} from '../../config';
 import {useThemedStyles} from '../../hooks';
+import {ToastHelper} from '../../helpers';
 
 type MnemonicInputProps = {
   values?: string[];
@@ -37,6 +38,12 @@ export const MnemonicInput = ({
     }
     // only allow lowercase letters
     if (!/^[a-z]*$/.test(text)) {
+      ToastHelper.show({
+        type: 'error',
+        autoHide: true,
+        text1: 'Invalid character',
+        text2: 'Only lowercase letters are allowed',
+      });
       return;
     }
     setValues?.(prev => {
@@ -85,7 +92,6 @@ export const MnemonicInput = ({
 const styles = (theme: Theme) =>
   StyleSheet.create({
     input: {
-      backgroundColor: theme.blue,
       borderRadius: 5,
       borderWidth: 1,
       fontSize: 16,

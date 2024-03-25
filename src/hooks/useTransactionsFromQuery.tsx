@@ -6,6 +6,7 @@ export const useTransactionsFromQuery = (address: string | undefined) => {
   return useQuery({
     queryKey: [QUERY.TRANSACTIONS_FROM],
     enabled: !!address,
+    staleTime: Infinity,
     queryFn: async () => {
       return await AlchemyHelper.getTransfersFrom({address});
     },

@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Image,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -8,20 +9,16 @@ import {
   View,
 } from 'react-native';
 import React, {useState} from 'react';
-import {QUERY, Theme} from '../../config';
-import {useThemedStyles} from '../../hooks';
-import {useDispatch, useSelector} from 'react-redux';
+import {Theme} from '../../config';
+import {useAccount, useThemedStyles, useWallet} from '../../hooks';
+import {useSelector} from 'react-redux';
 import {
-  addAccount,
   selectAccounts,
   selectCurrentAddress,
+  selectCurrentChainId,
   selectCurrentPrivateKey,
-  selectMnemonic,
-  setCurrentAccountIndex,
-  setCurrentPrivateKey,
 } from '../../store';
-import {Wallet} from 'ethers';
-import {AddressHelper, KeychainHelper, MnemonicHelper} from '../../helpers';
+import {FormatHelper, ToastHelper} from '../../helpers';
 import makeBlockie from 'ethereum-blockies-base64';
 import Animated, {
   FadeInDown,
@@ -29,41 +26,67 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import {AntDesign} from '@expo/vector-icons';
+import {AntDesign, Feather} from '@expo/vector-icons';
 import {FlatList} from 'react-native-gesture-handler';
-import {useQueryClient} from '@tanstack/react-query';
+import Clipboard from '@react-native-clipboard/clipboard';
+import {GestureButton} from './GestureButton';
+
+const AccountItem = ({address}: {address: string}) => {
+  const themedStyles = useThemedStyles(styles);
+
+  return (
+    <View style={themedStyles.item}>
+      <Image
+        source={{uri: makeBlockie(address)}}
+        style={themedStyles.blockie}
+      />
+      <Text style={themedStyles.address}>
+        {FormatHelper.formatAddress(address, 6)}
+      </Text>
+      <GestureButton>
+        <Pressable style={themedStyles.copyIcon}>
+          <Feather
+            name="copy"
+            size={14}
+            color={themedStyles.theme.green}
+            onPress={() => {
+              Clipboard.setString(address);
+            }}
+          />
+        </Pressable>
+      </GestureButton>
+    </View>
+  );
+};
 
 export const AccountButton = () => {
   const [isLoading, setIsLoading] = useState(false);
   const themedStyles = useThemedStyles(styles);
   const accounts = useSelector(selectAccounts);
   const currentPrivateKey = useSelector(selectCurrentPrivateKey);
-  const mnemonic = useSelector(selectMnemonic);
   const currentAddress = useSelector(selectCurrentAddress);
-  const dispatch = useDispatch();
-
-  const queryClient = useQueryClient();
+  const currentChainId = useSelector(selectCurrentChainId);
+  const {changeAccount} = useWallet();
+  const {createNewAccount, changeCurrentAccount} = useAccount();
 
   const opacityValue = useSharedValue(0);
 
   const handleCreateNewAccount = async () => {
     handleToggleModal(false);
     setIsLoading(true);
-    if (mnemonic) {
-      const {privateKey} = await MnemonicHelper.createWalletAtIndex(
-        mnemonic,
-        accounts.length,
-      );
-      const address = new Wallet(privateKey).address;
-      await KeychainHelper.set({
-        accountCount: accounts.length + 1,
-        mnemonic: mnemonic,
-        privateKey: privateKey,
+    try {
+      const res = await createNewAccount();
+      if (res?.address) {
+        changeAccount({address: res.address, chainId: currentChainId});
+      }
+    } catch (e) {
+      ToastHelper.show({
+        type: 'error',
+        autoHide: true,
+        text1: 'Error',
+        text2: 'Failed to create new account',
       });
-      dispatch(setCurrentAccountIndex(accounts.length));
-      dispatch(setCurrentPrivateKey(privateKey));
-      dispatch(addAccount({privateKey, address}));
-      handleInvalidateQueries();
+    } finally {
       setIsLoading(false);
     }
   };
@@ -72,16 +95,16 @@ export const AccountButton = () => {
     account: {privateKey: string; address: string},
     index: number,
   ) => {
-    if (mnemonic) {
-      handleToggleModal(false);
-      dispatch(setCurrentPrivateKey(account.privateKey));
-      dispatch(setCurrentAccountIndex(index));
-      await KeychainHelper.set({
-        accountCount: accounts.length,
-        mnemonic: mnemonic,
-        privateKey: account.privateKey,
+    handleToggleModal(false);
+    try {
+      await changeCurrentAccount(account, index);
+    } catch (e) {
+      ToastHelper.show({
+        type: 'error',
+        autoHide: true,
+        text1: 'Error',
+        text2: 'Failed to change account',
       });
-      handleInvalidateQueries();
     }
   };
 
@@ -93,11 +116,6 @@ export const AccountButton = () => {
     opacityValue.value = withSpring(nextValue, {
       duration: 500,
     });
-  };
-  const handleInvalidateQueries = async () => {
-    queryClient.invalidateQueries({queryKey: [QUERY.TRANSACTIONS_TO]});
-    queryClient.invalidateQueries({queryKey: [QUERY.TRANSACTIONS_FROM]});
-    queryClient.invalidateQueries({queryKey: [QUERY.TOKEN_HOLDINGS]});
   };
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -133,7 +151,7 @@ export const AccountButton = () => {
                   size={24}
                   color={themedStyles.theme.text}
                 />
-                <Text style={themedStyles.address}>Add account</Text>
+                <Text style={themedStyles.text}>Add account</Text>
               </Pressable>
             }
             renderItem={({item: account, index}) => {
@@ -142,15 +160,8 @@ export const AccountButton = () => {
               }
               return (
                 <Pressable
-                  style={themedStyles.item}
                   onPress={() => handleChangeCurrentAccount(account, index)}>
-                  <Image
-                    source={{uri: makeBlockie(account.address)}}
-                    style={themedStyles.blockie}
-                  />
-                  <Text style={themedStyles.address}>
-                    {AddressHelper.formatAddress(account.address, 6)}
-                  </Text>
+                  <AccountItem address={account.address} />
                 </Pressable>
               );
             }}
@@ -171,15 +182,7 @@ export const AccountButton = () => {
                 />
               </View>
             ) : (
-              <View style={themedStyles.item}>
-                <Image
-                  source={{uri: makeBlockie(currentAddress)}}
-                  style={themedStyles.blockie}
-                />
-                <Text style={themedStyles.address}>
-                  {AddressHelper.formatAddress(currentAddress, 6)}
-                </Text>
-              </View>
+              <AccountItem address={currentAddress} />
             )}
           </>
         )}
@@ -200,6 +203,11 @@ const styles = (theme: Theme) =>
       paddingVertical: 8,
     },
     address: {
+      fontSize: 14,
+      color: theme.text,
+      fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    },
+    text: {
       fontSize: 14,
       color: theme.text,
     },
@@ -256,5 +264,8 @@ const styles = (theme: Theme) =>
     },
     flexGrow: {
       flexGrow: 1,
+    },
+    copyIcon: {
+      marginLeft: 8,
     },
   });

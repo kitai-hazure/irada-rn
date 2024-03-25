@@ -33,7 +33,6 @@ export let web3wallet: IWeb3Wallet;
 
 export const createWeb3Wallet = async () => {
   if (web3wallet !== undefined) {
-    console.log('Web3Wallet already created');
     return;
   }
 

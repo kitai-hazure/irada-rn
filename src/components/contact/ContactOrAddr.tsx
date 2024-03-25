@@ -62,9 +62,7 @@ const styles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       backgroundColor: theme.container,
-      padding: 16,
       borderRadius: 16,
-      flex: 1,
     },
     image: {
       width: 30,

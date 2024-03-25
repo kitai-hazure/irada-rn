@@ -14,7 +14,7 @@ import {
   OnboardingWrapper,
 } from '../components';
 import {useThemedStyles} from '../hooks';
-import {KeychainHelper, MnemonicHelper} from '../helpers';
+import {KeychainHelper, MnemonicHelper, ToastHelper} from '../helpers';
 import {AppNavigatorRoutes, StackNavigationProps} from '../../types/navigation';
 import {useDispatch} from 'react-redux';
 import {
@@ -26,6 +26,7 @@ import {
 } from '../store';
 import {CommonActions} from '@react-navigation/native';
 import {Wallet} from 'ethers';
+import {CHAIN_LIST} from '../config/chain';
 
 export const ImportWallet = ({
   navigation,
@@ -36,32 +37,50 @@ export const ImportWallet = ({
   const dispatch = useDispatch();
 
   const handleImportWallet = async () => {
-    const phrase = values.join(' ');
-    const isValid = MnemonicHelper.isValidMnemonic(phrase);
-    if (!isValid) {
-      // TODO: show toast
-      console.error('Invalid Mnemonic', phrase);
-      return;
-    } else {
-      setLoading(true);
-      const {privateKey} = await MnemonicHelper.createWallet(phrase);
-      await KeychainHelper.set({mnemonic: phrase, privateKey, accountCount: 1});
-      dispatch(setCurrentPrivateKey(privateKey));
-      dispatch(setMnemonic(phrase));
-      dispatch(setIsFirstLogin(false));
-      dispatch(setHasWalletCreated(true));
-      dispatch(
-        setAccounts([
-          {address: new Wallet(privateKey).address, privateKey: privateKey},
-        ]),
-      );
-      setLoading(false);
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{name: 'Main'}],
-        }),
-      );
+    try {
+      const phrase = values.join(' ');
+      const isValid = MnemonicHelper.isValidMnemonic(phrase);
+      if (!isValid) {
+        ToastHelper.show({
+          type: 'error',
+          autoHide: true,
+          text1: 'Error',
+          text2: 'Invalid mnemonic',
+        });
+        return;
+      } else {
+        setLoading(true);
+        const {privateKey} = await MnemonicHelper.createWallet(phrase);
+        await KeychainHelper.set({
+          mnemonic: phrase,
+          privateKey,
+          accountCount: 1,
+          chainId: CHAIN_LIST[0].chainId,
+        });
+        dispatch(setCurrentPrivateKey(privateKey));
+        dispatch(setMnemonic(phrase));
+        dispatch(setIsFirstLogin(false));
+        dispatch(setHasWalletCreated(true));
+        dispatch(
+          setAccounts([
+            {address: new Wallet(privateKey).address, privateKey: privateKey},
+          ]),
+        );
+        setLoading(false);
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: 'Main'}],
+          }),
+        );
+      }
+    } catch (error: any) {
+      ToastHelper.show({
+        type: 'error',
+        autoHide: true,
+        text1: 'Error',
+        text2: error.message ?? 'Failed to import wallet',
+      });
     }
   };
 

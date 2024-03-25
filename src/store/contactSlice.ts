@@ -12,12 +12,12 @@ type DeleteAddressFromContactOptions = {
 
 export type ContactSliceData = {
   contactMap: {
-    [key: string]: {
+    [contactId: string]: {
       address: string;
     };
   };
   addressMap: {
-    [key: string]: {
+    [address: string]: {
       contactId: string;
     };
   };

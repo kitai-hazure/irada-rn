@@ -4,14 +4,21 @@ import {GestureButton, IradaButton, OnboardingWrapper} from '../components';
 import {AppNavigatorRoutes, StackNavigationProps} from '../../types/navigation';
 import {useThemedStyles} from '../hooks';
 import {
+  AlchemyHelper,
   KeychainHelper,
   KeychainPasswordOptions,
   MnemonicHelper,
+  ToastHelper,
 } from '../helpers';
 import Animated, {FadeInUp} from 'react-native-reanimated';
 import LottieView from 'lottie-react-native';
 import {useDispatch} from 'react-redux';
-import {setAccounts, setCurrentPrivateKey, setMnemonic} from '../store';
+import {
+  setAccounts,
+  setCurrentChainId,
+  setCurrentPrivateKey,
+  setMnemonic,
+} from '../store';
 import {Wallet} from 'ethers';
 
 const width = Dimensions.get('screen').width;
@@ -25,18 +32,27 @@ export const BiometricLogin = ({
 
   const fillAccountData = useCallback(
     async ({accountCount, mnemonic}: KeychainPasswordOptions) => {
-      const keys = await MnemonicHelper.createMultipleWallets(
-        mnemonic,
-        accountCount || 1,
-      );
-      const wallets = [];
-      for (const wallet of keys) {
-        wallets.push({
-          privateKey: wallet.privateKey,
-          address: new Wallet(wallet.privateKey).address,
+      try {
+        const keys = await MnemonicHelper.createMultipleWallets(
+          mnemonic,
+          accountCount ?? 1,
+        );
+        const wallets = [];
+        for (const wallet of keys) {
+          wallets.push({
+            privateKey: wallet.privateKey,
+            address: new Wallet(wallet.privateKey).address,
+          });
+        }
+        dispatch(setAccounts(wallets));
+      } catch (error: any) {
+        ToastHelper.show({
+          type: 'error',
+          autoHide: true,
+          text1: 'Error',
+          text2: error.message ?? 'Failed to fecth account data',
         });
       }
-      dispatch(setAccounts(wallets));
     },
     [dispatch],
   );
@@ -49,12 +65,21 @@ export const BiometricLogin = ({
         if (password && password.privateKey) {
           dispatch(setCurrentPrivateKey(password.privateKey));
           dispatch(setMnemonic(password.mnemonic));
+          dispatch(setCurrentChainId(password.chainId));
           fillAccountData(password);
-          // Move on with current password set while the other data loads
+          AlchemyHelper.init(password.chainId);
+          // Move on with current account set while the other data loads
           navigation.replace('Main');
         }
       }
-    } catch (err) {}
+    } catch (error: any) {
+      ToastHelper.show({
+        type: 'error',
+        autoHide: true,
+        text1: 'Error',
+        text2: error.message ?? 'Failed to setup your account',
+      });
+    }
   }, [dispatch, navigation, fillAccountData]);
 
   useEffect(() => {

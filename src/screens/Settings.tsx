@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import {Theme} from '../config';
+import {CONSTANTS, Theme} from '../config';
 import {useThemedStyles} from '../hooks';
 import {
   AccountButton,
@@ -17,14 +17,15 @@ import {
   GestureButton,
   Header,
 } from '../components';
-import {KeychainHelper} from '../helpers';
+import {KeychainHelper, ToastHelper} from '../helpers';
 import {useDispatch} from 'react-redux';
 import {
   clearAccountData,
   clearContacts,
   clearModalData,
-  setMnemonicProposalModal,
+  openMnemonicModal,
   setHasWalletCreated,
+  clearScheduledTransactions,
 } from '../store';
 import {
   DrawerNavigationProps,
@@ -39,24 +40,32 @@ export const Settings = ({
   const dispatch = useDispatch();
 
   const handleLogout = async () => {
-    await KeychainHelper.reset();
-    dispatch(clearAccountData());
-    dispatch(clearContacts());
-    dispatch(clearModalData());
-    dispatch(setHasWalletCreated(false));
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{name: 'Login'}],
-      }),
-    );
+    try {
+      await KeychainHelper.reset();
+      dispatch(clearAccountData());
+      dispatch(clearContacts());
+      dispatch(clearModalData());
+      dispatch(clearScheduledTransactions());
+      dispatch(setHasWalletCreated(false));
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: 'Login'}],
+        }),
+      );
+    } catch (error: any) {
+      ToastHelper.show({
+        type: 'error',
+        autoHide: true,
+        text1: 'Error',
+        text2: error.message ?? 'Failed to clear data, please try again',
+      });
+    }
   };
 
   const handleRevealMnemonic = async () => {
-    dispatch(setMnemonicProposalModal(true));
+    dispatch(openMnemonicModal(true));
   };
-
-  const contactUsUrl = 'kitaihazure2210@gmail.com';
 
   return (
     <DrawerLayout>
@@ -100,8 +109,12 @@ export const Settings = ({
               If you have any questions, please contact us at
             </Text>
             <TouchableOpacity
-              onPress={() => Linking.openURL(`mailto:${contactUsUrl}`)}>
-              <Text style={themedStyles.inlineButton}>{contactUsUrl}</Text>
+              onPress={() =>
+                Linking.openURL(`mailto:${CONSTANTS.CONTACT_US_EMAIL}`)
+              }>
+              <Text style={themedStyles.inlineButton}>
+                {CONSTANTS.CONTACT_US_EMAIL}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -3,9 +3,8 @@ import React from 'react';
 import {Theme} from '../../config';
 import {useThemedStyles} from '../../hooks';
 import Clipboard from '@react-native-clipboard/clipboard';
-import * as Haptics from 'expo-haptics';
 import {Feather} from '@expo/vector-icons';
-import {AddressHelper} from '../../helpers';
+import {FormatHelper} from '../../helpers';
 import {GestureButton} from './GestureButton';
 
 type AddressButtonProps = {
@@ -17,7 +16,6 @@ export const AddressButton = ({address}: AddressButtonProps) => {
 
   const onPress = async () => {
     Clipboard.setString(address);
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   return (
@@ -25,7 +23,7 @@ export const AddressButton = ({address}: AddressButtonProps) => {
       <TouchableOpacity onPress={onPress} style={themedStyles.container}>
         <Feather name="copy" size={14} color={themedStyles.copyIcon.color} />
         <Text style={themedStyles.address}>
-          {AddressHelper.formatAddress(address)}
+          {FormatHelper.formatAddress(address)}
         </Text>
       </TouchableOpacity>
     </GestureButton>

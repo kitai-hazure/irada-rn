@@ -15,6 +15,7 @@ import {
   DrawerNavigationProps,
   DrawerNavigatorRoutes,
 } from '../../types/navigation';
+import {ToastHelper} from '../helpers';
 
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
@@ -30,11 +31,29 @@ export const Scan = ({
   const {pair} = useWallet();
 
   const onBarCodeScanned = async (scanningResult: BarCodeScanningResult) => {
-    await pair(scanningResult.data);
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-    } else {
-      navigation.navigate('Home');
+    try {
+      if (!scanningResult.data.startsWith('wc:')) {
+        ToastHelper.show({
+          type: 'error',
+          autoHide: true,
+          text1: 'Error',
+          text2: 'Invalid QR code',
+        });
+        return;
+      }
+      await pair(scanningResult.data);
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+      } else {
+        navigation.navigate('Home');
+      }
+    } catch (error: any) {
+      ToastHelper.show({
+        type: 'error',
+        autoHide: true,
+        text1: 'Error',
+        text2: error.message ?? 'Failed to pair wallet',
+      });
     }
   };
 

@@ -17,12 +17,18 @@ import contactSlice from './contactSlice';
 import progressSlice from './progressSlice';
 import modalSlice from './modalSlice';
 import themeSlice from './themeSlice';
+import transactionSlice from './transactionSlice';
 
 const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  whitelist: [REDUX_STORE.CONTACT, REDUX_STORE.THEME, REDUX_STORE.PROGRESS],
+  whitelist: [
+    REDUX_STORE.CONTACT,
+    REDUX_STORE.THEME,
+    REDUX_STORE.PROGRESS,
+    REDUX_STORE.TRANSACTION,
+  ],
   blacklist: [REDUX_STORE.ACCOUNT, REDUX_STORE.MODALS],
 };
 
@@ -32,6 +38,7 @@ const rootReducer = combineReducers({
   [REDUX_STORE.ACCOUNT]: accountSlice,
   [REDUX_STORE.PROGRESS]: progressSlice,
   [REDUX_STORE.MODALS]: modalSlice,
+  [REDUX_STORE.TRANSACTION]: transactionSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

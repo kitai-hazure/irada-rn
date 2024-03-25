@@ -1,33 +1,47 @@
-import {StyleSheet} from 'react-native';
 import React from 'react';
+import {ActivityIndicator, StyleSheet} from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
-import {useContactsQuery, useThemedStyles} from '../../hooks';
+import {useThemedStyles} from '../../hooks';
 import {Contact} from 'expo-contacts';
 import {Theme} from '../../config';
-import {Errored, Loader} from '../misc';
+import {useSavedContacts} from '../../hooks/useSavedContacts';
 
 type ContactDropdownProps = {
   onChange: (contact: Contact) => void;
+  value: Contact | undefined;
+  disabled?: boolean;
 };
 
-export const ContactDropdown = ({onChange}: ContactDropdownProps) => {
-  const {data: contacts, isLoading, isError} = useContactsQuery();
+export const ContactDropdown = ({
+  onChange,
+  value,
+  disabled,
+}: ContactDropdownProps) => {
+  const {isLoading, data: savedContacts} = useSavedContacts();
   const themedStyles = useThemedStyles(styles);
 
-  if (isError) {
-    return <Errored />;
-  } else if (isLoading || !contacts) {
-    return <Loader />;
+  if (isLoading) {
+    return (
+      <ActivityIndicator
+        size="small"
+        color={themedStyles.theme.purple}
+        style={themedStyles.loader}
+      />
+    );
   }
 
   return (
     <Dropdown
-      data={contacts}
+      data={savedContacts}
       search={true}
       labelField="name"
       valueField="id"
+      value={value}
       onChange={onChange}
-      placeholder="Select contact"
+      placeholder={
+        savedContacts.length === 0 ? 'No contacts found' : 'Select a contact'
+      }
+      disable={savedContacts.length === 0 || disabled}
       containerStyle={themedStyles.containerStyle}
       itemContainerStyle={themedStyles.itemContainer}
       style={themedStyles.selectCountry}
@@ -51,7 +65,6 @@ const styles = (theme: Theme) =>
     selectCountry: {
       height: 40,
       borderRadius: 5,
-      paddingHorizontal: 10,
       color: theme.text,
     },
     containerStyle: {
@@ -79,5 +92,8 @@ const styles = (theme: Theme) =>
     itemTextStyle: {
       color: theme.text,
       fontSize: 14,
+    },
+    loader: {
+      paddingVertical: 10,
     },
   });

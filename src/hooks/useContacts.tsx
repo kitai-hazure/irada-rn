@@ -25,54 +25,71 @@ export const useContacts = () => {
   const contactMap = useSelector(selectContactMap);
   const dispatch = useDispatch();
 
-  const addToContact = ({contact, address}: AddAddressToContactOptions) => {
-    if (!contact.id) {
-      console.warn('Invalid contact id');
-      return;
-    } else {
-      if (!ethers.utils.isAddress(address)) {
-        console.warn('Invalid address');
-        return;
+  const addToContact = useCallback(
+    ({contact, address}: AddAddressToContactOptions) => {
+      if (!contact.id) {
+        throw new Error('Invalid contact id');
+      } else {
+        if (!ethers.utils.isAddress(address)) {
+          throw new Error('Invalid address');
+        }
+        dispatch(
+          addAddressToContact({
+            address,
+            contactId: contact.id,
+          }),
+        );
       }
-      dispatch(
-        addAddressToContact({
-          address,
-          contactId: contact.id,
-        }),
-      );
-    }
-  };
+    },
+    [dispatch],
+  );
 
-  const removeFromContact = ({contact}: RemoveAddressFromContactOptions) => {
-    if (!contact.id) {
-      console.warn('Invalid contact id');
-      return;
-    } else {
-      dispatch(
-        deleteAddressFromContact({
-          contactId: contact.id,
-        }),
-      );
-    }
-  };
+  const removeFromContact = useCallback(
+    ({contact}: RemoveAddressFromContactOptions) => {
+      if (!contact.id) {
+        throw new Error('Invalid contact id');
+      } else {
+        dispatch(
+          deleteAddressFromContact({
+            contactId: contact.id,
+          }),
+        );
+      }
+    },
+    [dispatch],
+  );
 
-  const getAddressFromContact = ({contact}: GetAddressFromContactOptions) => {
-    if (!contact.id) {
-      console.warn('Invalid contact id');
-      return;
-    } else {
-      return contactMap[contact.id]?.address ?? undefined;
-    }
-  };
+  const getAddressFromContact = useCallback(
+    ({contact}: GetAddressFromContactOptions) => {
+      if (!contact.id) {
+        throw new Error('Invalid contact id');
+      } else {
+        return contactMap[contact.id]?.address ?? undefined;
+      }
+    },
+    [contactMap],
+  );
 
   const getParticularContact = useCallback(async (id: string) => {
     return await Contacts.getContactByIdAsync(id);
   }, []);
+
+  const createNewContact = useCallback(
+    async (contact: Contacts.Contact, address: string) => {
+      if (!ethers.utils.isAddress(address)) {
+        throw new Error('Invalid address');
+      }
+      await Contacts.addContactAsync(contact);
+      addToContact({contact, address});
+    },
+    [addToContact],
+  );
 
   return {
     addToContact,
     removeFromContact,
     getAddressFromContact,
     getParticularContact,
+    createNewContact,
   };
 };

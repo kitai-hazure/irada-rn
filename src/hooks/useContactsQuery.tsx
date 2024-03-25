@@ -3,10 +3,12 @@ import {QUERY} from '../config';
 import {Platform} from 'react-native';
 import * as Contacts from 'expo-contacts';
 import {request, PERMISSIONS} from 'react-native-permissions';
+import {ToastHelper} from '../helpers';
 
 export const useContactsQuery = () => {
   return useQuery({
     queryKey: [QUERY.CONTACTS],
+    staleTime: Infinity,
     queryFn: async () => {
       const res = await request(
         Platform.OS === 'android'
@@ -22,7 +24,12 @@ export const useContactsQuery = () => {
         const {data} = await Contacts.getContactsAsync({sort: 'firstName'});
         return data;
       } else {
-        throw new Error('Permission denied');
+        ToastHelper.show({
+          type: 'error',
+          autoHide: true,
+          text1: 'Error',
+          text2: 'Permission denied, please allow access to contacts',
+        });
       }
     },
   });

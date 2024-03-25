@@ -9,21 +9,39 @@ import {
   Scan,
   TransactionHistory,
   TokenBalances,
+  ScheduleTransactions,
 } from '../screens';
 import {DrawerNavigatorRoutes} from '../../types/navigation';
-import {useThemedStyles} from '../hooks';
+import {
+  useAlchemyInitialize,
+  useStartNotifeeModals,
+  useStartTransactionModals,
+  useThemedStyles,
+  useWalletConnectEvents,
+  useWalletConnectInitialize,
+  useDeeplink,
+} from '../hooks';
 import {
   ContactsIcon,
   HomeIcon,
   SavedContactsIcon,
+  ScheduleTransactionsIcon,
   SendMoneyIcon,
   SettingsIcon,
+  TokenBalancesIcon,
+  TransactionHistoryIcon,
 } from '../components';
 
 const Drawer = createDrawerNavigator<DrawerNavigatorRoutes>();
 
-const DrawerNavigator = () => {
+export const DrawerNavigator = () => {
   const themedStyles = useThemedStyles(() => {});
+  const initialized = useWalletConnectInitialize();
+  useWalletConnectEvents(initialized);
+  useAlchemyInitialize();
+  useStartNotifeeModals();
+  useStartTransactionModals();
+  useDeeplink();
 
   return (
     <Drawer.Navigator
@@ -43,11 +61,9 @@ const DrawerNavigator = () => {
         },
         drawerStyle: {
           backgroundColor: themedStyles.theme.container,
-          width: '60%',
+          width: '65%',
           elevation: 0,
-          shadowColor: 'red',
           borderWidth: 0,
-          borderColor: 'red',
         },
         headerShown: false,
       }}>
@@ -74,15 +90,11 @@ const DrawerNavigator = () => {
         name="SendMoney"
         component={SendMoney}
         options={{
+          unmountOnBlur: true,
           drawerLabel: 'Send Money',
           title: 'Send Money',
           drawerIcon: SendMoneyIcon,
         }}
-      />
-      <Drawer.Screen
-        name="Settings"
-        component={Settings}
-        options={{drawerIcon: SettingsIcon}}
       />
       <Drawer.Screen
         name="Scan"
@@ -95,15 +107,30 @@ const DrawerNavigator = () => {
       <Drawer.Screen
         name="TransactionHistory"
         component={TransactionHistory}
-        options={{drawerItemStyle: {display: 'none'}}}
+        options={{
+          drawerIcon: TransactionHistoryIcon,
+          drawerLabel: 'Transaction History',
+        }}
       />
       <Drawer.Screen
         name="TokenBalances"
         component={TokenBalances}
-        options={{drawerItemStyle: {display: 'none'}}}
+        options={{drawerIcon: TokenBalancesIcon, drawerLabel: 'Token Balances'}}
+      />
+      <Drawer.Screen
+        name="ScheduleTransactions"
+        component={ScheduleTransactions}
+        options={{
+          drawerIcon: ScheduleTransactionsIcon,
+          drawerLabel: 'Schedule Transactions',
+          drawerLabelStyle: {},
+        }}
+      />
+      <Drawer.Screen
+        name="Settings"
+        component={Settings}
+        options={{drawerIcon: SettingsIcon}}
       />
     </Drawer.Navigator>
   );
 };
-
-export default DrawerNavigator;

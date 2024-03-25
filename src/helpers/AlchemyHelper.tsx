@@ -1,42 +1,56 @@
-import {ALCHEMY_KEY} from '@env';
 import {
   Alchemy,
   AssetTransfersCategory,
   AssetTransfersResponse,
+  BigNumber,
   Network,
+  OwnedToken,
   SortingOrder,
-  TokenMetadataResponse,
 } from 'alchemy-sdk';
-
-export type TokenData = {
-  balance: string;
-  metadata: TokenMetadataResponse;
-  address: string;
-};
+import type {TransactionRequest} from '@ethersproject/abstract-provider';
+import {ethers} from 'ethers';
+import {
+  CHAINS,
+  CHAIN_LIST,
+  CONSTANTS,
+  ENV,
+  getChainFromAlchemyNetwork,
+} from '../config';
 
 type AlchemyHelperTypes = {
   alchemy: Alchemy;
-  init: (network: Network) => Promise<void>;
+  network: Network;
+  init: (chainId: string) => Promise<void>;
   getTransfersFrom: (params: {
     address?: string;
   }) => Promise<AssetTransfersResponse>;
   getTransfersTo: (params: {
     address?: string;
   }) => Promise<AssetTransfersResponse>;
-  getTokenBalances: (params: {address?: string}) => Promise<TokenData[]>;
+  getTokenBalances: (params: {address?: string}) => Promise<OwnedToken[]>;
+  getNativeCurrencyBalance: (params: {
+    address?: string;
+  }) => Promise<string | undefined>;
+  getBalances: (params: {address?: string}) => Promise<OwnedToken[]>;
+  estimateGas: (transaction: TransactionRequest) => Promise<BigNumber>;
+  getGasPrice: () => Promise<BigNumber>;
+  getProvider: () => ethers.providers.Provider;
 };
 
 export const AlchemyHelper: AlchemyHelperTypes = {
+  network: Network.ETH_SEPOLIA,
+
   alchemy: new Alchemy({
-    apiKey: ALCHEMY_KEY,
-    network: Network.ETH_MAINNET,
+    apiKey: ENV.ALCHEMY_KEY,
+    network: Network.ETH_SEPOLIA,
   }),
 
-  async init(network: Network) {
+  async init(chainId: string) {
     AlchemyHelper.alchemy = new Alchemy({
-      apiKey: ALCHEMY_KEY,
-      network,
+      apiKey: ENV.ALCHEMY_KEY,
+      network: CHAINS[chainId].network,
     });
+    AlchemyHelper.network = CHAINS[chainId].network;
   },
 
   async getTransfersFrom({address}) {
@@ -75,36 +89,47 @@ export const AlchemyHelper: AlchemyHelperTypes = {
     if (!address) {
       return [];
     }
-    const balances = await AlchemyHelper.alchemy.core.getTokenBalances(address);
-    const nonZeroBalances = balances.tokenBalances.filter(token => {
-      return (
-        token.tokenBalance !==
-        '0x0000000000000000000000000000000000000000000000000000000000000000'
-      );
+    const data = await AlchemyHelper.alchemy.core.getTokensForOwner(address);
+    return data.tokens;
+  },
+
+  async getNativeCurrencyBalance({address}) {
+    if (!address) {
+      return undefined;
+    }
+    const balance = await AlchemyHelper.alchemy.core.getBalance(address);
+    return balance._hex;
+  },
+
+  async getBalances({address}) {
+    const nativeBalance = await AlchemyHelper.getNativeCurrencyBalance({
+      address,
     });
-    console.log('nonZeroBalances', nonZeroBalances);
-
-    const tokensData: TokenData[] = [];
-
-    for (let token of nonZeroBalances) {
-      if (!token || !token.tokenBalance) {
-        continue;
-      }
-      let balance = parseInt(token.tokenBalance, 16);
-      const metadata = await AlchemyHelper.alchemy.core.getTokenMetadata(
-        token.contractAddress,
-      );
-      if (!metadata.decimals) {
-        continue;
-      }
-      balance = balance / Math.pow(10, metadata.decimals);
-      balance.toFixed(2);
-      tokensData.push({
-        balance: balance.toString(),
-        metadata,
-        address: token.contractAddress,
+    const tokenBalances = await AlchemyHelper.getTokenBalances({address});
+    const chain = CHAIN_LIST.find(c => c.network === AlchemyHelper.network);
+    if (chain) {
+      tokenBalances.push({
+        contractAddress: CONSTANTS.ZERO_ADDRESS,
+        balance: nativeBalance,
+        decimals: chain.nativeCurrency.decimals,
+        name: chain.nativeCurrency.name,
+        logo: chain.nativeCurrency.image,
+        symbol: chain.nativeCurrency.symbol,
       });
     }
-    return tokensData;
+    return tokenBalances;
+  },
+
+  async estimateGas(transaction) {
+    return await AlchemyHelper.alchemy.core.estimateGas(transaction);
+  },
+
+  async getGasPrice() {
+    return await AlchemyHelper.alchemy.core.getGasPrice();
+  },
+
+  getProvider() {
+    const chain = getChainFromAlchemyNetwork(AlchemyHelper.network);
+    return new ethers.providers.JsonRpcProvider(chain?.rpcUrl);
   },
 };

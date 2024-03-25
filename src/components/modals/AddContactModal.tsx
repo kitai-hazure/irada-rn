@@ -1,34 +1,36 @@
 import React, {useState} from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {StyleSheet, TextInput, View} from 'react-native';
 import {useContacts, useThemedStyles} from '../../hooks';
-import {Contact} from 'expo-contacts';
 import {Theme} from '../../config';
-import * as Haptics from 'expo-haptics';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  closeAddAddressToContactModal,
+  selectAddAddressToContactModal,
+} from '../../store';
+import {GestureButton, IradaButton} from '../buttons';
+import {ToastHelper} from '../../helpers';
 
-interface AddContactModalProps {
-  contact: Contact;
-  hideModal?: () => void;
-  openModal?: () => void;
-}
-
-export const AddContactModal = ({contact, hideModal}: AddContactModalProps) => {
+export const AddContactModal = () => {
   const {addToContact} = useContacts();
   const [address, setAddress] = useState<string>('');
   const themedStyles = useThemedStyles(styles);
+  const {contact} = useSelector(selectAddAddressToContactModal);
+  const dispatch = useDispatch();
 
   const handleAddToContact = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    addToContact({
-      contact,
-      address,
-    });
-    hideModal?.();
+    try {
+      if (contact) {
+        addToContact({contact, address});
+        dispatch(closeAddAddressToContactModal());
+      }
+    } catch (error: any) {
+      ToastHelper.show({
+        type: 'error',
+        autoHide: true,
+        text1: 'Error',
+        text2: error.message ?? 'Failed to add address to contact',
+      });
+    }
   };
 
   return (
@@ -40,11 +42,11 @@ export const AddContactModal = ({contact, hideModal}: AddContactModalProps) => {
         style={themedStyles.input}
         placeholderTextColor={themedStyles.input.color}
       />
-      <TouchableOpacity
-        onPress={handleAddToContact}
-        style={themedStyles.addButton}>
-        <Text style={themedStyles.addButtonText}>Add to {contact?.name}</Text>
-      </TouchableOpacity>
+      <GestureButton>
+        <IradaButton onPress={handleAddToContact} color="container">
+          {`Add to ${contact?.name}`}
+        </IradaButton>
+      </GestureButton>
     </View>
   );
 };
@@ -60,17 +62,6 @@ const styles = (theme: Theme) =>
       borderWidth: 1,
       borderColor: theme.lightText,
       borderRadius: 8,
-      color: theme.text,
-    },
-    addButton: {
-      margin: 10,
-      padding: 10,
-      backgroundColor: theme.container,
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderRadius: 8,
-    },
-    addButtonText: {
       color: theme.text,
     },
   });

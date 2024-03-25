@@ -6,6 +6,7 @@ export const useTokenBalancesQuery = (address: string | undefined) => {
   return useQuery({
     queryKey: [QUERY.TOKEN_HOLDINGS],
     enabled: !!address,
+    staleTime: Infinity,
     queryFn: async () => {
       return await AlchemyHelper.getTokenBalances({address});
     },

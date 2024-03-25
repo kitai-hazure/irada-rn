@@ -14,7 +14,7 @@ export type Theme = {
   blurType: 'dark' | 'light' | 'xlight';
 };
 
-const COMMON_THEME = {
+export const COMMON_THEME = {
   purple: '#6F59ED',
   green: '#8BE48D',
   yellow: '#FAE079',

@@ -14,7 +14,7 @@ import {
   OnboardingWrapper,
 } from '../components';
 import {useThemedStyles} from '../hooks';
-import {KeychainHelper, MnemonicHelper} from '../helpers';
+import {KeychainHelper, MnemonicHelper, ToastHelper} from '../helpers';
 import {AppNavigatorRoutes, StackNavigationProps} from '../../types/navigation';
 import {useDispatch} from 'react-redux';
 import {
@@ -26,6 +26,7 @@ import {
 } from '../store';
 import {CommonActions} from '@react-navigation/native';
 import {Wallet} from 'ethers';
+import {CHAIN_LIST} from '../config/chain';
 
 export const CreateWallet = ({
   navigation,
@@ -37,9 +38,18 @@ export const CreateWallet = ({
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const {seed} = MnemonicHelper.generateMnemonic();
-    setValues(seed.split(' '));
-    setPhrase(seed);
+    try {
+      const {seed} = MnemonicHelper.generateMnemonic();
+      setValues(seed.split(' '));
+      setPhrase(seed);
+    } catch {
+      ToastHelper.show({
+        type: 'error',
+        autoHide: true,
+        text1: 'Error',
+        text2: 'Failed to generate mnemonic',
+      });
+    }
   }, []);
 
   const handleSavedPhrase = async () => {
@@ -51,6 +61,7 @@ export const CreateWallet = ({
           mnemonic: phrase,
           privateKey,
           accountCount: 1,
+          chainId: CHAIN_LIST[0].chainId,
         });
         dispatch(setCurrentPrivateKey(privateKey));
         dispatch(setMnemonic(phrase));

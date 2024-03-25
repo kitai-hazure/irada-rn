@@ -12,6 +12,7 @@ import {PersistGate} from 'redux-persist/integration/react';
 import Toast from 'react-native-toast-message';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {Modals} from './src/components';
+import {toastConfig} from './src/config';
 
 const queryClient = new QueryClient();
 const persistor = persistStore(store);
@@ -34,7 +35,7 @@ export default function App() {
           </QueryClientProvider>
         </PersistGate>
       </Provider>
-      <Toast />
+      <Toast config={toastConfig} />
     </>
   );
 }

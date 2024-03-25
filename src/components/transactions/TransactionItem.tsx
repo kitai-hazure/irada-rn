@@ -4,6 +4,8 @@ import {Theme} from '../../config';
 import {useThemedStyles} from '../../hooks';
 import {ContactOrAddr} from '../contact';
 import {AssetTransfersCategory, AssetTransfersResult} from 'alchemy-sdk';
+import {useSelector} from 'react-redux';
+import {selectCurrentChain} from '../../store';
 
 export type TransactionItemProps = {
   item: AssetTransfersResult;
@@ -12,10 +14,10 @@ export type TransactionItemProps = {
 
 export const TransactionItem = ({item, received}: TransactionItemProps) => {
   const themedStyles = useThemedStyles(styles);
+  const currentChain = useSelector(selectCurrentChain);
 
   const handleOpenUrl = (tx: string) => {
-    // TODO: handle current chain
-    Linking.openURL(`https://sepolia.etherscan.io/tx/${tx}`);
+    Linking.openURL(`${currentChain?.blockExplorerUrl}tx/${tx}`);
   };
 
   const title = useMemo(() => {

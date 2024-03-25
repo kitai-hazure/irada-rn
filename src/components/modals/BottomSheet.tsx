@@ -20,6 +20,7 @@ const OVERDRAG = 20;
 
 type BottomSheetProps = {
   height: number;
+  minHeight?: number;
   isOpen: boolean;
   closeSheet: () => void;
   children: React.ReactNode;
@@ -30,13 +31,14 @@ export const BottomSheet = ({
   closeSheet,
   height,
   children,
+  minHeight,
 }: BottomSheetProps) => {
   const themedStyles = useThemedStyles(styles);
   const yOffset = useSharedValue(0);
 
   const close = () => {
+    yOffset.value = withSpring(0, {damping: 20});
     closeSheet();
-    yOffset.value = 0;
   };
 
   const pan = Gesture.Pan()
@@ -78,8 +80,12 @@ export const BottomSheet = ({
       </Animated.View>
       <GestureDetector gesture={pan}>
         <Animated.View
-          style={[themedStyles.sheet, {maxHeight: height}, translateY]}
-          entering={SlideInDown.springify().damping(15)}
+          style={[
+            themedStyles.sheet,
+            {maxHeight: height, minHeight},
+            translateY,
+          ]}
+          entering={SlideInDown.springify().damping(25)}
           exiting={SlideOutDown}>
           {children}
         </Animated.View>

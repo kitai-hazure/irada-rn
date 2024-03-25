@@ -1,24 +1,52 @@
-import {FlatList, StyleSheet, View} from 'react-native';
 import React from 'react';
+import {FlatList, StyleSheet, View} from 'react-native';
 import {Theme} from '../config';
-import {useThemedStyles} from '../hooks';
-import {ContactItemSmall, DrawerLayout} from '../components';
+import {useSavedContacts, useThemedStyles} from '../hooks';
+import {
+  ContactItemSmall,
+  DrawerLayout,
+  Empty,
+  Errored,
+  Header,
+  Loader,
+} from '../components';
 
 export const SavedContacts = () => {
-  // const {savedContacts} = useContacts();
-  const savedContacts: any = [];
+  const {data: savedContacts, isError, isLoading} = useSavedContacts();
   const themedStyles = useThemedStyles(styles);
+
+  if (isError) {
+    return (
+      <DrawerLayout>
+        <Header title="Saved Contacts" />
+        <Errored />
+      </DrawerLayout>
+    );
+  } else if (isLoading || !savedContacts) {
+    return (
+      <DrawerLayout>
+        <Header title="Saved Contacts" />
+        <Loader />
+      </DrawerLayout>
+    );
+  }
 
   return (
     <DrawerLayout>
-      <View style={themedStyles.container}>
-        <FlatList
-          numColumns={3}
-          data={savedContacts}
-          renderItem={({item}) => <ContactItemSmall contact={item} />}
-          keyExtractor={item => `${item.id}-${item.name}`}
-        />
-      </View>
+      <Header title="Saved Contacts" />
+      {savedContacts.length > 0 ? (
+        <View style={themedStyles.container}>
+          <FlatList
+            columnWrapperStyle={themedStyles.columnWrapper}
+            numColumns={3}
+            data={savedContacts}
+            renderItem={({item}) => <ContactItemSmall contact={item} />}
+            keyExtractor={item => `${item.id}-${item.name}`}
+          />
+        </View>
+      ) : (
+        <Empty message="No saved contacts found" />
+      )}
     </DrawerLayout>
   );
 };
@@ -26,10 +54,11 @@ export const SavedContacts = () => {
 const styles = (theme: Theme) =>
   StyleSheet.create({
     container: {
-      paddingHorizontal: 8,
       paddingVertical: 16,
       flex: 1,
       backgroundColor: theme.background,
-      alignItems: 'center',
+    },
+    columnWrapper: {
+      justifyContent: 'space-around',
     },
   });
