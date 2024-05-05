@@ -1,4 +1,4 @@
-package com.irada
+package com.kitaihazure.irada
 import android.content.res.Configuration
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper

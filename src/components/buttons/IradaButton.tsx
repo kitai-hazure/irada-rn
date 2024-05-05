@@ -23,7 +23,7 @@ type IradaButtonProps = {
   loaderColor?: keyof Theme;
 } & PressableProps;
 
-export const IradaButton = ({
+const IradaButtonComponent = ({
   color,
   textColor = 'white',
   textStyle,
@@ -64,6 +64,8 @@ export const IradaButton = ({
     </Pressable>
   );
 };
+
+export const IradaButton = React.memo(IradaButtonComponent);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

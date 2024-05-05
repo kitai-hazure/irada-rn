@@ -11,7 +11,7 @@ type HeroButtonProps = {
   item: HeroButtonType;
 };
 
-export const HeroButton = ({item}: HeroButtonProps) => {
+const HeroButtonComponent = ({item}: HeroButtonProps) => {
   const themedStyles = useThemedStyles(styles);
 
   return (
@@ -26,7 +26,7 @@ export const HeroButton = ({item}: HeroButtonProps) => {
   );
 };
 
-export default HeroButton;
+export const HeroButton = React.memo(HeroButtonComponent);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

@@ -31,7 +31,7 @@ const ChainItem = ({chain}: {chain: Chain}) => {
   );
 };
 
-export const ChainButton = () => {
+const ChainButtonComponent = () => {
   const themedStyles = useThemedStyles(styles);
   const chains = useSelector(selectChains);
   const currentChain = useSelector(selectCurrentChain);
@@ -107,6 +107,8 @@ export const ChainButton = () => {
     </View>
   );
 };
+
+export const ChainButton = React.memo(ChainButtonComponent);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

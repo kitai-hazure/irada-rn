@@ -10,15 +10,7 @@ import {
   TokenBalances,
   ScheduleTransactions,
 } from '../screens';
-import {
-  useAlchemyInitialize,
-  useStartNotifeeModals,
-  useStartTransactionModals,
-  useThemedStyles,
-  useWalletConnectEvents,
-  useWalletConnectInitialize,
-  useDeeplink,
-} from '../hooks';
+import {useThemedStyles} from '../hooks';
 import {
   ContactsIcon,
   HomeIcon,
@@ -33,12 +25,6 @@ import {Drawer} from './navigators';
 
 export const DrawerNavigator = () => {
   const themedStyles = useThemedStyles(() => {});
-  const initialized = useWalletConnectInitialize();
-  useWalletConnectEvents(initialized);
-  useAlchemyInitialize();
-  useStartNotifeeModals();
-  useStartTransactionModals();
-  useDeeplink();
 
   return (
     <Drawer.Navigator

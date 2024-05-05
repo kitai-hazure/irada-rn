@@ -20,3 +20,4 @@ export * from './useStartTransactionModals';
 export * from './useSavedContacts';
 export * from './useBalancesQuery';
 export * from './useDeeplink';
+export * from './useAfterInteractions';

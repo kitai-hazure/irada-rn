@@ -1,4 +1,4 @@
-package com.irada
+package com.kitaihazure.irada
 import expo.modules.ReactActivityDelegateWrapper
 
 import com.facebook.react.ReactActivity

@@ -22,7 +22,7 @@ export type CurrencyDropdownType = {
   symbol?: string;
 };
 
-export const CurrencyDropdown = ({
+const CurrencyDropdownComponent = ({
   onChange,
   value,
   disabled,
@@ -84,6 +84,8 @@ export const CurrencyDropdown = ({
     />
   );
 };
+
+export const CurrencyDropdown = React.memo(CurrencyDropdownComponent);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

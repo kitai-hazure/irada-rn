@@ -11,7 +11,7 @@ type ContactItemProps = {
   onPressAdd: () => void;
 };
 
-export const ContactItem = ({contact, onPressAdd}: ContactItemProps) => {
+const ContactItemComponent = ({contact, onPressAdd}: ContactItemProps) => {
   const themedStyles = useThemedStyles(styles);
   const {getAddressFromContact} = useContacts();
   const address = getAddressFromContact({contact});
@@ -46,6 +46,8 @@ export const ContactItem = ({contact, onPressAdd}: ContactItemProps) => {
     </View>
   );
 };
+
+export const ContactItem = React.memo(ContactItemComponent);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

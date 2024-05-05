@@ -6,7 +6,7 @@ import {
 
 import {DrawerLayout, Header, SendTokens} from '../components';
 
-export const SendMoney = ({}: DrawerNavigationProps<
+const SendMoneyScreen = ({}: DrawerNavigationProps<
   DrawerNavigatorRoutes,
   'SendMoney'
 >) => {
@@ -17,3 +17,5 @@ export const SendMoney = ({}: DrawerNavigationProps<
     </DrawerLayout>
   );
 };
+
+export const SendMoney = React.memo(SendMoneyScreen);

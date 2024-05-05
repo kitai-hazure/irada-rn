@@ -35,7 +35,7 @@ export const useContacts = () => {
         }
         dispatch(
           addAddressToContact({
-            address,
+            address: address.toLowerCase(),
             contactId: contact.id,
           }),
         );

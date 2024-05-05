@@ -13,7 +13,7 @@ import {useThemedStyles} from '../hooks';
 import {useDispatch} from 'react-redux';
 import {openCreateScheduledTransactionModal} from '../store';
 
-export const ScheduleTransactions = () => {
+const ScheduleTransactionsScreen = () => {
   const themedStyles = useThemedStyles(styles);
   const dispatch = useDispatch();
 
@@ -36,6 +36,8 @@ export const ScheduleTransactions = () => {
     </DrawerLayout>
   );
 };
+
+export const ScheduleTransactions = React.memo(ScheduleTransactionsScreen);
 
 const styles = (_: Theme) =>
   StyleSheet.create({

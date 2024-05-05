@@ -16,15 +16,25 @@ import {useDispatch} from 'react-redux';
 import {openAddAddressToContactModal, openCreateContactModal} from '../store';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 
-export const Contacts = () => {
+const ContactsScreen = () => {
   const {data: contacts, isLoading, isError} = useContactsQuery();
   const themedStyles = useThemedStyles(styles);
   const dispatch = useDispatch();
 
   if (isError) {
-    return <Errored />;
+    return (
+      <DrawerLayout>
+        <Header title="Contacts" />
+        <Errored />
+      </DrawerLayout>
+    );
   } else if (isLoading) {
-    return <Loader />;
+    return (
+      <DrawerLayout>
+        <Header title="Contacts" />
+        <Loader />
+      </DrawerLayout>
+    );
   }
 
   const handleOpenCreateContactModal = () => {
@@ -49,16 +59,18 @@ export const Contacts = () => {
           <FlatList
             showsVerticalScrollIndicator={false}
             data={contacts}
-            renderItem={({item: contact}) => (
-              <ContactItem
-                contact={contact}
-                onPressAdd={() => {
-                  dispatch(
-                    openAddAddressToContactModal({isOpen: true, contact}),
-                  );
-                }}
-              />
-            )}
+            renderItem={({item: contact}) => {
+              return (
+                <ContactItem
+                  contact={contact}
+                  onPressAdd={() => {
+                    dispatch(
+                      openAddAddressToContactModal({isOpen: true, contact}),
+                    );
+                  }}
+                />
+              );
+            }}
             keyExtractor={item => item.id!}
           />
         </View>
@@ -66,6 +78,8 @@ export const Contacts = () => {
     </DrawerLayout>
   );
 };
+
+export const Contacts = React.memo(ContactsScreen);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

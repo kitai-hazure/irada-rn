@@ -83,12 +83,12 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.irada"
+    namespace "com.kitaihazure.irada"
     defaultConfig {
-        applicationId "com.irada"
+        applicationId "com.kitaihazure.irada"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        versionCode 3
         versionName "1.0"
     }
     signingConfigs {

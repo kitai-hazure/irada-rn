@@ -13,7 +13,7 @@ export type TransactionItemProps = {
   received: boolean;
 };
 
-export const TransactionItem = ({item, received}: TransactionItemProps) => {
+const TransactionItemComponent = ({item, received}: TransactionItemProps) => {
   const themedStyles = useThemedStyles(styles);
   const currentChain = useSelector(selectCurrentChain);
 
@@ -72,6 +72,8 @@ export const TransactionItem = ({item, received}: TransactionItemProps) => {
     </View>
   );
 };
+
+export const TransactionItem = React.memo(TransactionItemComponent);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

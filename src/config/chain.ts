@@ -49,7 +49,9 @@ export const CHAINS: {
   },
 };
 
-export const CHAIN_LIST = Object.values(CHAINS);
+export const CHAIN_LIST = Object.values(CHAINS).sort(
+  (a, b) => parseInt(b.chainId, 10) - parseInt(a.chainId, 10),
+);
 
 export const getChainFromAlchemyNetwork = (network: Network) => {
   return CHAIN_LIST.find(chain => chain.network === network);

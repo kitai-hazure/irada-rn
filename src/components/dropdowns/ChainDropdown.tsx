@@ -11,7 +11,7 @@ type ChainDropdownProps = {
   onChange: (chain: Chain) => void;
 };
 
-export const ChainDropdown = ({onChange}: ChainDropdownProps) => {
+const ChainDropdownComponent = ({onChange}: ChainDropdownProps) => {
   const themedStyles = useThemedStyles(styles);
   const currentChain = useSelector(selectCurrentChain);
   const [value, setValue] = useState<Chain>(currentChain);
@@ -46,6 +46,8 @@ export const ChainDropdown = ({onChange}: ChainDropdownProps) => {
     />
   );
 };
+
+export const ChainDropdown = ChainDropdownComponent;
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

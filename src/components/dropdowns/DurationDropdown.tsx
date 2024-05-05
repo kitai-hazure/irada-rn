@@ -27,7 +27,7 @@ const durationData: {id: number; unit: TimeUnit; name: string}[] = [
   },
 ];
 
-export const DurationDropdown = ({onChange}: DurationDropdownProps) => {
+const DurationDropdownComponent = ({onChange}: DurationDropdownProps) => {
   const themedStyles = useThemedStyles(styles);
 
   return (
@@ -47,6 +47,8 @@ export const DurationDropdown = ({onChange}: DurationDropdownProps) => {
     />
   );
 };
+
+export const DurationDropdown = React.memo(DurationDropdownComponent);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

@@ -15,7 +15,7 @@ const renderScene = SceneMap({
   to: TransactionsToList,
 });
 
-export const TransactionHistory = () => {
+const TransactionHistoryScreen = () => {
   const layout = useWindowDimensions();
   const themedStyles = useThemedStyles(styles);
 
@@ -47,6 +47,8 @@ export const TransactionHistory = () => {
     </DrawerLayout>
   );
 };
+
+export const TransactionHistory = React.memo(TransactionHistoryScreen);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

@@ -1,6 +1,6 @@
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import React, {useMemo} from 'react';
-import {Theme} from '../config';
+import {CONSTANTS, Theme} from '../config';
 import {useNativeBalanceQuery, useThemedStyles} from '../hooks';
 import {DrawerLayout, Header, HeroButton} from '../components';
 
@@ -27,7 +27,7 @@ export type HeroButtonType = {
   onPress: () => void;
 };
 
-export const Home = ({
+const HomeScreen = ({
   navigation,
 }: DrawerNavigationProps<DrawerNavigatorRoutes, 'Home'>) => {
   const themedStyles = useThemedStyles(styles);
@@ -107,7 +107,7 @@ export const Home = ({
         <Text style={themedStyles.balance}>Balance</Text>
         <Text style={themedStyles.balanceValue} numberOfLines={1}>
           {nativeBalance
-            ? `${ethers.utils.formatEther(nativeBalance).slice(0, 10)} ${
+            ? `${ethers.utils.formatEther(nativeBalance).slice(0, 6)} ${
                 chain.nativeCurrency.symbol
               }`
             : 'Loading...'}
@@ -132,9 +132,7 @@ export const Home = ({
           Use your device's voice assistant to interact with Irada.Ask your
           assistant to send tokens, check your balance, and more. Try saying
           <Text style={themedStyles.bannerHighlight}>
-            {' '}
-            "Hey {Platform.OS === 'android' ? 'Google' : 'Siri'}, send 1 ETH to
-            Alice on Sepolia"
+            {` ${CONSTANTS.ASSISTANT_PROMPT}`}, send 1 ETH to Alice on Sepolia"
           </Text>
         </Text>
       </Animated.View>
@@ -160,6 +158,8 @@ export const Home = ({
     </DrawerLayout>
   );
 };
+
+export const Home = React.memo(HomeScreen);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

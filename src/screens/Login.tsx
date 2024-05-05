@@ -5,7 +5,7 @@ import {AppNavigatorRoutes, StackNavigationProps} from '../../types/navigation';
 import {Theme} from '../config';
 import {GestureButton, IradaButton, OnboardingWrapper} from '../components';
 
-export const Login = ({
+const LoginScreen = ({
   navigation,
 }: StackNavigationProps<AppNavigatorRoutes, 'Login'>) => {
   const themedStyles = useThemedStyles(styles);
@@ -41,6 +41,8 @@ export const Login = ({
     </OnboardingWrapper>
   );
 };
+
+export const Login = React.memo(LoginScreen);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

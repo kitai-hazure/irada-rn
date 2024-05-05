@@ -24,7 +24,7 @@ import {Wallet} from 'ethers';
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
-export const BiometricLogin = ({
+const BiometricLoginScreen = ({
   navigation,
 }: StackNavigationProps<AppNavigatorRoutes, 'BiometricLogin'>) => {
   const themedStyles = useThemedStyles(styles);
@@ -120,6 +120,8 @@ export const BiometricLogin = ({
     </OnboardingWrapper>
   );
 };
+
+export const BiometricLogin = React.memo(BiometricLoginScreen);
 
 const styles = () =>
   StyleSheet.create({

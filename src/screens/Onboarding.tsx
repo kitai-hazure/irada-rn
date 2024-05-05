@@ -9,7 +9,7 @@ import Animated, {
   scrollTo,
 } from 'react-native-reanimated';
 import {OnboardingSlide} from '../components';
-import {DARK_THEME, Theme} from '../config';
+import {CONSTANTS, DARK_THEME, Theme} from '../config';
 import {GestureButton} from '../components';
 import {useThemedStyles} from '../hooks';
 import {AntDesign} from '@expo/vector-icons';
@@ -33,22 +33,21 @@ const onboardingData: Array<OnboardingData> = [
     bg: DARK_THEME.orange,
   },
   {
-    title: 'Voice Assistant',
-    description:
-      'Interactive native voice Assistant to cater to all your needs',
+    title: `Use ${CONSTANTS.ASSISTANT_NAME}`,
+    description: `Integrated with ${CONSTANTS.ASSISTANT_NAME} to cater to all your needs via voice prompts`,
     animation: require('../../assets/animations/voice.json'),
     bg: DARK_THEME.purple,
   },
   {
-    title: 'Get Started',
+    title: 'Missed dues? Not anymore!',
     description:
-      'Get started with Irada by importing your wallet or creating a new one',
+      'Create scheduled transactions to get notified for recurring pending dues and never miss a deadline.',
     animation: require('../../assets/animations/wallet.json'),
     bg: DARK_THEME.green,
   },
 ];
 
-export const Onboarding = ({
+const OnboardingScreen = ({
   navigation,
 }: StackNavigationProps<AppNavigatorRoutes, 'Onboarding'>) => {
   const themedStyles = useThemedStyles(styles);
@@ -95,7 +94,7 @@ export const Onboarding = ({
       />
       <View style={themedStyles.bottom}>
         <GestureButton>
-          <Pressable onPress={onPress} style={[themedStyles.button]}>
+          <Pressable onPress={onPress} style={themedStyles.button}>
             <Text style={themedStyles.buttonText}>Next</Text>
             <AntDesign
               name="arrowright"
@@ -108,6 +107,8 @@ export const Onboarding = ({
     </View>
   );
 };
+
+export const Onboarding = React.memo(OnboardingScreen);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({
@@ -133,8 +134,8 @@ const styles = (theme: Theme) =>
       flexDirection: 'row',
       gap: 8,
       backgroundColor: theme.container,
-      padding: 20,
-      paddingHorizontal: 30,
+      paddingVertical: 16,
+      paddingHorizontal: 26,
       borderRadius: 16,
       alignItems: 'center',
     },

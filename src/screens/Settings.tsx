@@ -16,6 +16,7 @@ import {
   GestureButton,
   Header,
   IradaButton,
+  optimizeHeavyScreen,
 } from '../components';
 import {KeychainHelper, ToastHelper} from '../helpers';
 import {useDispatch} from 'react-redux';
@@ -34,7 +35,7 @@ import {
 } from '../../types/navigation';
 import {CommonActions} from '@react-navigation/native';
 
-export const Settings = ({
+const SettingsScreen = ({
   navigation,
 }: DrawerNavigationProps<DrawerNavigatorRoutes, 'Settings'>) => {
   const themedStyles = useThemedStyles(styles);
@@ -74,64 +75,75 @@ export const Settings = ({
   };
 
   return (
-    <DrawerLayout>
-      <Header title="Settings" />
-      <ScrollView nestedScrollEnabled={true}>
-        <View style={themedStyles.sectionContainer}>
-          <Text style={themedStyles.sectionTitle}>Security</Text>
+    <ScrollView nestedScrollEnabled={true}>
+      <View style={themedStyles.sectionContainer}>
+        <Text style={themedStyles.sectionTitle}>Security</Text>
+        <Text style={themedStyles.description}>
+          Make sure no one else can see the your secret phrase before you reveal
+          it
+        </Text>
+        <GestureButton>
+          <IradaButton
+            textColor="white"
+            color="purple"
+            onPress={handleRevealMnemonic}
+            style={themedStyles.button}>
+            Reveal Mnemonic
+          </IradaButton>
+        </GestureButton>
+      </View>
+      <View style={themedStyles.sectionContainer}>
+        <Text style={themedStyles.sectionTitle}>Chain</Text>
+        <ChainButton />
+      </View>
+      <View style={themedStyles.sectionContainer}>
+        <Text style={themedStyles.sectionTitle}>Accounts</Text>
+        <AccountButton />
+        <GestureButton>
+          <IradaButton
+            textColor="white"
+            color="orange"
+            onPress={handleLogout}
+            loading={loading}
+            loaderColor="white"
+            style={themedStyles.button}>
+            Clear data and log out
+          </IradaButton>
+        </GestureButton>
+      </View>
+      <View style={themedStyles.sectionContainer}>
+        <Text style={themedStyles.sectionTitle}>Contact Us</Text>
+        <View style={themedStyles.wrap}>
           <Text style={themedStyles.description}>
-            Make sure no one else can see the your secret phrase before you
-            reveal it
+            Currently, we are in alpha testing mode and hence only support
+            testnets. If you have any questions, please contact us at
           </Text>
-          <GestureButton>
-            <IradaButton
-              textColor="white"
-              color="purple"
-              onPress={handleRevealMnemonic}
-              style={themedStyles.button}>
-              Reveal Mnemonic
-            </IradaButton>
-          </GestureButton>
-        </View>
-        <View style={themedStyles.sectionContainer}>
-          <Text style={themedStyles.sectionTitle}>Chain</Text>
-          <ChainButton />
-        </View>
-        <View style={themedStyles.sectionContainer}>
-          <Text style={themedStyles.sectionTitle}>Accounts</Text>
-          <AccountButton />
-          <GestureButton>
-            <IradaButton
-              textColor="white"
-              color="orange"
-              onPress={handleLogout}
-              loading={loading}
-              loaderColor="white"
-              style={themedStyles.button}>
-              Clear data and log out
-            </IradaButton>
-          </GestureButton>
-        </View>
-        <View style={themedStyles.sectionContainer}>
-          <Text style={themedStyles.sectionTitle}>Contact Us</Text>
-          <View style={themedStyles.wrap}>
-            <Text style={themedStyles.description}>
-              If you have any questions, please contact us at
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL(`mailto:${CONSTANTS.CONTACT_US_EMAIL}`)
+            }>
+            <Text style={themedStyles.inlineButton}>
+              {CONSTANTS.CONTACT_US_EMAIL}
             </Text>
-            <TouchableOpacity
-              onPress={() =>
-                Linking.openURL(`mailto:${CONSTANTS.CONTACT_US_EMAIL}`)
-              }>
-              <Text style={themedStyles.inlineButton}>
-                {CONSTANTS.CONTACT_US_EMAIL}
-              </Text>
-            </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
         </View>
-      </ScrollView>
-    </DrawerLayout>
+      </View>
+    </ScrollView>
   );
 };
+
+const OptimizedSettings = optimizeHeavyScreen(SettingsScreen);
+
+export const Settings = (
+  props: DrawerNavigationProps<DrawerNavigatorRoutes, 'Settings'>,
+) => (
+  <>
+    <DrawerLayout>
+      <Header title="Settings" />
+      <OptimizedSettings {...props} />
+    </DrawerLayout>
+  </>
+);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({
@@ -146,7 +158,7 @@ const styles = (theme: Theme) =>
       color: theme.purple,
     },
     sectionContainer: {
-      marginTop: 16,
+      marginBottom: 16,
       backgroundColor: theme.container,
       padding: 16,
       borderRadius: 16,

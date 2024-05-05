@@ -12,7 +12,7 @@ type ContactDropdownProps = {
   disabled?: boolean;
 };
 
-export const ContactDropdown = ({
+const ContactDropdownComponent = ({
   onChange,
   value,
   disabled,
@@ -53,6 +53,8 @@ export const ContactDropdown = ({
     />
   );
 };
+
+export const ContactDropdown = React.memo(ContactDropdownComponent);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

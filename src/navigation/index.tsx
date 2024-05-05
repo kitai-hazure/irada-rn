@@ -1,5 +1,13 @@
 import React from 'react';
-import {useThemedStyles} from '../hooks';
+import {
+  useAlchemyInitialize,
+  useDeeplink,
+  useStartNotifeeModals,
+  useStartTransactionModals,
+  useThemedStyles,
+  useWalletConnectEvents,
+  useWalletConnectInitialize,
+} from '../hooks';
 import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import {linking} from '../config';
 import {OuterNavigator} from './OuterNavigator';
@@ -7,6 +15,13 @@ import {Modals} from '../components';
 
 const AppNavigator = () => {
   const themedStyles = useThemedStyles(() => {});
+  const initialized = useWalletConnectInitialize();
+  useWalletConnectEvents(initialized);
+  useAlchemyInitialize();
+  useStartNotifeeModals();
+  useStartTransactionModals();
+  useDeeplink();
+
   return (
     <NavigationContainer
       linking={linking}

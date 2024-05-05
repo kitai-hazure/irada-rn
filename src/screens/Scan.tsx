@@ -21,7 +21,7 @@ const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 const sideWidths = (width - height / 3) / 2;
 
-export const Scan = ({
+const ScanScreen = ({
   navigation,
 }: DrawerNavigationProps<DrawerNavigatorRoutes, 'Scan'>) => {
   const themedStyles = useThemedStyles(styles);
@@ -117,6 +117,8 @@ export const Scan = ({
     </DrawerLayout>
   );
 };
+
+export const Scan = React.memo(ScanScreen);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

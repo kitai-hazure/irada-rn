@@ -12,7 +12,10 @@ type AddressButtonProps = {
   padded?: boolean;
 };
 
-export const AddressButton = ({address, padded = true}: AddressButtonProps) => {
+const AddressButtonComponent = ({
+  address,
+  padded = true,
+}: AddressButtonProps) => {
   const themedStyles = useThemedStyles(styles);
 
   const onPress = async () => {
@@ -38,6 +41,8 @@ export const AddressButton = ({address, padded = true}: AddressButtonProps) => {
     </GestureButton>
   );
 };
+
+export const AddressButton = React.memo(AddressButtonComponent);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

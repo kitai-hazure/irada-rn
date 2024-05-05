@@ -5,7 +5,7 @@ import {
   TokenBalances as TokenBalancesList,
 } from '../components';
 
-export const TokenBalances = () => {
+const TokenBalancesScreen = () => {
   return (
     <DrawerLayout>
       <Header title="Token Balances" />
@@ -13,3 +13,5 @@ export const TokenBalances = () => {
     </DrawerLayout>
   );
 };
+
+export const TokenBalances = React.memo(TokenBalancesScreen);

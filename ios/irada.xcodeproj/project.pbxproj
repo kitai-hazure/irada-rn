@@ -543,6 +543,7 @@
 				DEVELOPMENT_TEAM = 85B2Y67733;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = irada/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Irada;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -571,6 +572,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 85B2Y67733;
 				INFOPLIST_FILE = irada/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Irada;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

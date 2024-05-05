@@ -29,7 +29,9 @@ export const OuterNavigator = () => {
 
   return (
     <OuterStack.Navigator
-      screenOptions={{headerShown: false}}
+      screenOptions={{
+        headerShown: false,
+      }}
       initialRouteName={initialRouteName}>
       <OuterStack.Screen name="Onboarding" component={Onboarding} />
       <OuterStack.Screen name="Login" component={Login} />
@@ -37,7 +39,13 @@ export const OuterNavigator = () => {
       <OuterStack.Screen name="CreateWallet" component={CreateWallet} />
       <OuterStack.Screen name="ImportWallet" component={ImportWallet} />
       <OuterStack.Screen name="EnableContacts" component={EnableContacts} />
-      <OuterStack.Screen name="Main" component={DrawerNavigator} />
+      <OuterStack.Screen
+        name="Main"
+        component={DrawerNavigator}
+        options={{
+          animationEnabled: false,
+        }}
+      />
     </OuterStack.Navigator>
   );
 };

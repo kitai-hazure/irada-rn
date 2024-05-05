@@ -16,7 +16,7 @@ type GestureButtonProps = {
   impactStyle?: Haptics.ImpactFeedbackStyle;
 } & ViewProps;
 
-export const GestureButton = ({
+const GestureButtonComponent = ({
   children,
   scale = 1.05,
   impactStyle = Haptics.ImpactFeedbackStyle.Light,
@@ -57,3 +57,5 @@ export const GestureButton = ({
     </GestureDetector>
   );
 };
+
+export const GestureButton = React.memo(GestureButtonComponent);

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">irada</string>
+    <string name="app_name">Irada</string>
     <string-array name="SendMoneyQueries">
         <item>Send $to $amount $currency on $chain.</item>
         <item>Transfer $amount $currency to $to on $chain.</item>

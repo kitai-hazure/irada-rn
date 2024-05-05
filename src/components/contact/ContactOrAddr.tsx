@@ -13,7 +13,10 @@ type ContactOrAddrProps = {
   padded?: boolean;
 };
 
-export const ContactOrAddr = ({address, padded = true}: ContactOrAddrProps) => {
+const ContactOrAddrComponent = ({
+  address,
+  padded = true,
+}: ContactOrAddrProps) => {
   const addressMap = useSelector(selectAddressMap);
   const [contact, setContact] = useState<Contact.Contact>();
   const themedStyles = useThemedStyles(styles);
@@ -58,6 +61,8 @@ export const ContactOrAddr = ({address, padded = true}: ContactOrAddrProps) => {
     </View>
   );
 };
+
+export const ContactOrAddr = React.memo(ContactOrAddrComponent);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

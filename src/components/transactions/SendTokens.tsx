@@ -34,6 +34,7 @@ import {useNavigation} from '@react-navigation/native';
 import {DrawerNavigationProp} from '@react-navigation/drawer';
 import {DrawerNavigatorRoutes} from '../../../types/navigation';
 import {useQueryClient} from '@tanstack/react-query';
+import {Loader, optimizeHeavyScreen} from '../misc';
 
 type SendTokensProps = {
   type:
@@ -43,7 +44,7 @@ type SendTokensProps = {
     | 'SEND_WITH_PARAMS';
 };
 
-export const SendTokens = ({type}: SendTokensProps) => {
+const SendTokensComponent = ({type}: SendTokensProps) => {
   const themedStyles = useThemedStyles(styles);
   const [amount, setAmount] = useState('');
   const [to, setTo] = useState<Contact | undefined>(undefined);
@@ -91,10 +92,34 @@ export const SendTokens = ({type}: SendTokensProps) => {
         sendTokensScheduledModal.isOpen &&
         sendTokensScheduledModal.scheduledTransaction
       ) {
-        const {contactId} =
+        console.log('Scheduled to', {
+          to: sendTokensScheduledModal.scheduledTransaction.to,
+          addressMap,
+        });
+        console.log(
+          'addr',
+          ethers.utils.getAddress(
+            sendTokensScheduledModal.scheduledTransaction.to.toLowerCase(),
+          ),
+        );
+        const contactId =
           addressMap[
             sendTokensScheduledModal.scheduledTransaction.to.toLowerCase()
-          ];
+          ]?.contactId ||
+          addressMap[
+            ethers.utils.getAddress(
+              sendTokensScheduledModal.scheduledTransaction.to.toLowerCase(),
+            )
+          ]?.contactId;
+        if (!contactId) {
+          ToastHelper.show({
+            type: 'error',
+            autoHide: true,
+            text1: 'Error',
+            text2: 'Failed to find contact',
+          });
+          return;
+        }
         setAmount(sendTokensScheduledModal.scheduledTransaction.amount);
         setCurrency(sendTokensScheduledModal.scheduledTransaction.currency);
         setDescription(
@@ -441,6 +466,8 @@ export const SendTokens = ({type}: SendTokensProps) => {
     </View>
   );
 };
+
+export const SendTokens = optimizeHeavyScreen(SendTokensComponent, Loader);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

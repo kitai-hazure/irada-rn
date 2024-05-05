@@ -11,7 +11,7 @@ import {
   Loader,
 } from '../components';
 
-export const SavedContacts = () => {
+const SavedContactsScreen = () => {
   const {data: savedContacts, isError, isLoading} = useSavedContacts();
   const themedStyles = useThemedStyles(styles);
 
@@ -50,6 +50,8 @@ export const SavedContacts = () => {
     </DrawerLayout>
   );
 };
+
+export const SavedContacts = React.memo(SavedContactsScreen);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

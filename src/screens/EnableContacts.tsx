@@ -8,7 +8,7 @@ import {PERMISSIONS, request} from 'react-native-permissions';
 import LottieView from 'lottie-react-native';
 import {ToastHelper} from '../helpers';
 
-export const EnableContacts = ({
+const EnableContactsScreen = ({
   navigation,
 }: StackNavigationProps<AppNavigatorRoutes, 'EnableContacts'>) => {
   const themedStyles = useThemedStyles(styles);
@@ -20,7 +20,7 @@ export const EnableContacts = ({
         ? PERMISSIONS.ANDROID.READ_CONTACTS
         : PERMISSIONS.IOS.CONTACTS,
       {
-        message: 'Irada would like to view your contacts',
+        message: 'Irada would like to access your contacts',
         title: 'Contacts',
         buttonPositive: 'Allow',
       },
@@ -72,6 +72,8 @@ export const EnableContacts = ({
     </OnboardingWrapper>
   );
 };
+
+export const EnableContacts = React.memo(EnableContactsScreen);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

@@ -64,9 +64,8 @@ export const OnboardingSlide = ({
         autoPlay
         loop
       />
-      <Text style={[themedStyles.itemText, {color: themedStyles.theme.text}]}>
-        {item.title}
-      </Text>
+      <Text style={themedStyles.itemText}>{item.title}</Text>
+      <Text style={themedStyles.itemDescription}>{item.description}</Text>
     </View>
   );
 };
@@ -76,7 +75,7 @@ const styles = (theme: Theme) =>
     itemContainer: {
       flex: 1,
       justifyContent: 'flex-start',
-      marginTop: height / 4,
+      marginTop: height / 7,
       alignItems: 'center',
       width: width,
     },
@@ -93,5 +92,12 @@ const styles = (theme: Theme) =>
       textAlign: 'center',
       marginHorizontal: 20,
       color: theme.text,
+    },
+    itemDescription: {
+      fontSize: 18,
+      textAlign: 'center',
+      marginHorizontal: 20,
+      color: theme.text,
+      marginTop: 20,
     },
   });

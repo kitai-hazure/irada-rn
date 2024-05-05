@@ -10,7 +10,7 @@ type ContactItemSmallProps = {
   contact: Contact;
 };
 
-export const ContactItemSmall = ({contact}: ContactItemSmallProps) => {
+const ContactItemSmallComponent = ({contact}: ContactItemSmallProps) => {
   const themedStyles = useThemedStyles(styles);
   const {getAddressFromContact} = useContacts();
 
@@ -30,6 +30,8 @@ export const ContactItemSmall = ({contact}: ContactItemSmallProps) => {
     </View>
   );
 };
+
+export const ContactItemSmall = React.memo(ContactItemSmallComponent);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

@@ -28,7 +28,7 @@ import {CommonActions} from '@react-navigation/native';
 import {Wallet} from 'ethers';
 import {CHAIN_LIST} from '../config/chain';
 
-export const ImportWallet = ({
+const ImportWalletScreen = ({
   navigation,
 }: StackNavigationProps<AppNavigatorRoutes, 'ImportWallet'>) => {
   const [values, setValues] = useState(Array(12));
@@ -112,6 +112,8 @@ export const ImportWallet = ({
     </ScrollView>
   );
 };
+
+export const ImportWallet = React.memo(ImportWalletScreen);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

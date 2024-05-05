@@ -31,7 +31,7 @@ import {FlatList} from 'react-native-gesture-handler';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {GestureButton} from './GestureButton';
 
-const AccountItem = ({address}: {address: string}) => {
+const AccountItemComponent = ({address}: {address: string}) => {
   const themedStyles = useThemedStyles(styles);
 
   return (
@@ -59,7 +59,9 @@ const AccountItem = ({address}: {address: string}) => {
   );
 };
 
-export const AccountButton = () => {
+export const AccountItem = React.memo(AccountItemComponent);
+
+const AccountButtonComponent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const themedStyles = useThemedStyles(styles);
   const accounts = useSelector(selectAccounts);
@@ -190,6 +192,8 @@ export const AccountButton = () => {
     </View>
   );
 };
+
+export const AccountButton = React.memo(AccountButtonComponent);
 
 const styles = (theme: Theme) =>
   StyleSheet.create({

@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
 import {Linking} from 'react-native';
-import {DeeplinkHelper} from '../helpers';
+import {DeeplinkHelper, ToastHelper} from '../helpers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {CONSTANTS} from '../config';
 import {useStartTransactionModals} from './useStartTransactionModals';
@@ -16,6 +16,13 @@ export const useDeeplink = () => {
           JSON.stringify(DeeplinkHelper.parseParams(url)),
         );
         openModals();
+      } else {
+        ToastHelper.show({
+          text1: 'Invalid assistant prompt',
+          text2: 'The prompt is invalid, please try again',
+          type: 'error',
+          autoHide: true,
+        });
       }
     });
 
